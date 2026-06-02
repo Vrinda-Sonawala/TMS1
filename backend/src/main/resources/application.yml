@@ -1,0 +1,90 @@
+spring:
+  application:
+    name: aegis-capital-banking
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/aegis_bank_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password: Kamlesh@0
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+    show-sql: true
+
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+
+    open-in-view: false
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+aegis:
+  jwt:
+    secret: aegis-capital-banking-jwt-secret-key-minimum-256-bits-required-for-hs256-algorithm
+    expiration-ms: 86400000
+
+  banking:
+    default-currency: USD
+
+    savings:
+      minimum-balance: 500.00
+      daily-withdrawal-limit: 5000.00
+      interest-rate: 0.035
+
+    current:
+      overdraft-limit: 10000.00
+
+    business:
+      daily-transaction-limit: 100000.00
+
+    fixed-deposit:
+      lock-period-days: 365
+      interest-rate: 0.065
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+  endpoint:
+    health:
+      show-details: when_authorized
+
+springdoc:
+  api-docs:
+    path: /api-docs
+
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
+logging:
+  level:
+    root: INFO
+    com.aegisbank: DEBUG
+    org.springframework.security: INFO
+
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

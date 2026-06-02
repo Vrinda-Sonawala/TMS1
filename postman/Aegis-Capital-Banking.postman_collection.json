@@ -1,0 +1,169 @@
+{
+  "info": {
+    "name": "Aegis Capital Banking API",
+    "description": "Enterprise banking transaction management REST API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080/api/v1" },
+    { "key": "token", "value": "" },
+    { "key": "accountNumber", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"phoneNumber\": \"+1-555-1234\",\n  \"password\": \"Secure@123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "if (json.data && json.data.token) {",
+                "  pm.collectionVariables.set('token', json.data.token);",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"Secure@123\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Accounts",
+      "item": [
+        {
+          "name": "Create Account",
+          "event": [{
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var json = pm.response.json();",
+                "if (json.data && json.data.accountNumber) {",
+                "  pm.collectionVariables.set('accountNumber', json.data.accountNumber);",
+                "}"
+              ]
+            }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/accounts/create",
+            "body": { "mode": "raw", "raw": "{\n  \"accountType\": \"SAVINGS\"\n}" }
+          }
+        },
+        {
+          "name": "Get Balance",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/accounts/balance/{{accountNumber}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        {
+          "name": "Deposit",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/transactions/deposit",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountNumber\": \"{{accountNumber}}\",\n  \"amount\": 1000.00,\n  \"description\": \"Initial deposit\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Withdraw",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/transactions/withdraw",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accountNumber\": \"{{accountNumber}}\",\n  \"amount\": 100.00,\n  \"description\": \"ATM withdrawal\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Transfer",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": "{{baseUrl}}/transactions/transfer",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"senderAccountNumber\": \"{{accountNumber}}\",\n  \"receiverAccountNumber\": \"AC9876543210\",\n  \"amount\": 50.00,\n  \"description\": \"Payment\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Transaction History",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/transactions/history/{{accountNumber}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/admin/users"
+          }
+        },
+        {
+          "name": "Get All Transactions",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/admin/transactions"
+          }
+        }
+      ]
+    }
+  ]
+}

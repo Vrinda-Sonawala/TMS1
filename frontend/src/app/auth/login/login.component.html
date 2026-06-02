@@ -1,0 +1,58 @@
+<div class="auth-wrapper">
+  <div class="auth-branding">
+    <div class="brand-content">
+      <div class="logo-wrap">
+        <mat-icon>account_balance</mat-icon>
+      </div>
+      <h1>Aegis Capital</h1>
+      <p class="tagline">International Banking Portal</p>
+      <div class="features">
+        <div class="feature"><mat-icon>verified_user</mat-icon><span>Bank-grade security</span></div>
+        <div class="feature"><mat-icon>bolt</mat-icon><span>Instant transfers</span></div>
+        <div class="feature"><mat-icon>public</mat-icon><span>Global banking access</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-form-panel">
+    <div class="form-card">
+      <h2>Welcome back</h2>
+      <p class="form-subtitle">Sign in to manage your accounts securely</p>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Email address</mat-label>
+          <input matInput formControlName="email" type="email" autocomplete="email">
+          <mat-icon matPrefix>mail_outline</mat-icon>
+          @if (form.get('email')?.hasError('required') && form.get('email')?.touched) {
+            <mat-error>Email is required</mat-error>
+          }
+          @if (form.get('email')?.hasError('email')) {
+            <mat-error>Enter a valid email</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Password</mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" autocomplete="current-password">
+          <mat-icon matPrefix>lock_outline</mat-icon>
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword" tabindex="-1">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" class="submit-btn" [disabled]="loading || form.invalid">
+          @if (loading) {
+            <span class="btn-loading">Signing in...</span>
+          } @else {
+            Sign In
+          }
+        </button>
+      </form>
+
+      <p class="auth-switch">
+        New to Aegis Capital? <a routerLink="/auth/register">Create an account</a>
+      </p>
+    </div>
+  </div>
+</div>

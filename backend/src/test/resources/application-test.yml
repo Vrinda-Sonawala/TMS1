@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MySQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  h2:
+    console:
+      enabled: false
+
+aegis:
+  jwt:
+    secret: test-jwt-secret-key-minimum-256-bits-for-testing-purposes-only
+    expiration-ms: 3600000
+
+logging:
+  level:
+    com.aegisbank: DEBUG

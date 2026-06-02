@@ -1,0 +1,50 @@
+<app-page-header title="Withdraw Funds" subtitle="Withdraw from your available balance" icon="remove_circle"></app-page-header>
+
+<div class="txn-form-layout">
+  <div class="form-panel">
+    <div class="form-icon withdraw"><mat-icon>arrow_upward</mat-icon></div>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>From account</mat-label>
+        <mat-select formControlName="accountNumber">
+          @for (a of accounts; track a.id) {
+            <mat-option [value]="a.accountNumber">
+              {{ a.accountNumber }} — {{ a.balance | currency:a.currency }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      @if (selectedAccount) {
+        <div class="balance-info">
+          Available: <strong>{{ selectedAccount.balance | currency:selectedAccount.currency }}</strong>
+        </div>
+      }
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Amount</mat-label>
+        <input matInput type="number" formControlName="amount" min="0.01" step="0.01">
+        <span matTextPrefix>$&nbsp;</span>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Description (optional)</mat-label>
+        <input matInput formControlName="description">
+      </mat-form-field>
+
+      <button mat-raised-button color="warn" class="submit-btn withdraw-btn" [disabled]="loading || form.invalid">
+        @if (loading) { <mat-spinner diameter="20"></mat-spinner> }
+        @else { Confirm Withdrawal }
+      </button>
+    </form>
+  </div>
+
+  <div class="info-panel">
+    <h4>Withdrawal Rules</h4>
+    <ul>
+      <li><mat-icon>info</mat-icon> Savings accounts have daily limits</li>
+      <li><mat-icon>info</mat-icon> Minimum balance rules apply</li>
+      <li><mat-icon>info</mat-icon> Fixed deposit accounts cannot withdraw</li>
+    </ul>
+  </div>
+</div>

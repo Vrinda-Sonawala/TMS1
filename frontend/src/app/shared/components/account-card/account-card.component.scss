@@ -1,0 +1,93 @@
+@import '../../../../styles/variables';
+
+.account-card {
+  position: relative;
+  border-radius: $radius-lg;
+  background: $surface;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+  @include hover-lift;
+  border: 1px solid rgba(10, 22, 40, 0.06);
+}
+
+.card-accent {
+  height: 4px;
+  width: 100%;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.type-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: $radius-sm;
+  background: color-mix(in srgb, var(--accent) 12%, white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    color: var(--accent);
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
+  }
+}
+
+.status-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+
+  &.status-active { background: rgba(13, 159, 110, 0.12); color: $success; }
+  &.status-blocked, &.status-frozen { background: rgba(220, 53, 69, 0.12); color: $error; }
+  &.status-closed { background: rgba(139, 149, 165, 0.15); color: $text-muted; }
+}
+
+.type-label {
+  font-size: 0.85rem;
+  color: $text-secondary;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.account-number {
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 0.8rem;
+  color: $text-muted;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.balance {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: $text-primary;
+  letter-spacing: -0.02em;
+}
+
+.card-footer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(10, 22, 40, 0.06);
+  font-size: 0.8rem;
+  color: $text-muted;
+}
+
+.compact {
+  .card-body { padding: 1rem; }
+  .balance { font-size: 1.35rem; }
+  .card-footer { display: none; }
+}

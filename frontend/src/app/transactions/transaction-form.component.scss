@@ -1,0 +1,79 @@
+@import '../../styles/variables';
+
+.txn-form-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 2rem;
+  align-items: start;
+
+  @media (max-width: 768px) { grid-template-columns: 1fr; }
+}
+
+.form-panel {
+  background: $surface;
+  border-radius: $radius-lg;
+  padding: 2rem;
+  box-shadow: $shadow-sm;
+  border: 1px solid rgba(10, 22, 40, 0.06);
+}
+
+.form-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+
+  mat-icon { font-size: 28px; width: 28px; height: 28px; color: #fff; }
+
+  &.deposit { background: linear-gradient(135deg, $success, #0a7a55); }
+  &.withdraw { background: linear-gradient(135deg, $error, #b02a37); }
+  &.transfer { background: linear-gradient(135deg, $primary, $primary-light); }
+}
+
+.w-100 { width: 100%; margin-bottom: 0.25rem; }
+
+.balance-info {
+  background: $surface-muted;
+  padding: 0.75rem 1rem;
+  border-radius: $radius-sm;
+  font-size: 0.9rem;
+  color: $text-secondary;
+  margin-bottom: 1rem;
+
+  strong { color: $text-primary; }
+}
+
+.submit-btn {
+  width: 100%;
+  height: 48px;
+  font-weight: 600;
+  margin-top: 0.5rem;
+  border-radius: $radius-sm !important;
+}
+
+.withdraw-btn { background: $error !important; }
+
+.info-panel {
+  background: $surface;
+  border-radius: $radius-lg;
+  padding: 1.5rem;
+  box-shadow: $shadow-sm;
+
+  h4 { font-size: 0.95rem; font-weight: 700; color: $text-primary; margin-bottom: 1rem; }
+
+  ul { list-style: none; padding: 0; margin: 0; }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.5rem 0;
+    font-size: 0.85rem;
+    color: $text-secondary;
+
+    mat-icon { font-size: 18px; width: 18px; height: 18px; color: $primary; }
+  }
+}

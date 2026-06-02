@@ -1,0 +1,75 @@
+<div class="auth-wrapper">
+  <div class="auth-branding">
+    <div class="brand-content">
+      <div class="logo-wrap"><mat-icon>account_balance</mat-icon></div>
+      <h1>Join Aegis Capital</h1>
+      <p class="tagline">Open your account in minutes</p>
+      <div class="features">
+        <div class="feature"><mat-icon>shield</mat-icon><span>256-bit encryption</span></div>
+        <div class="feature"><mat-icon>savings</mat-icon><span>Multiple account types</span></div>
+        <div class="feature"><mat-icon>speed</mat-icon><span>Real-time transactions</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-form-panel">
+    <div class="form-card register-card">
+      <h2>Create account</h2>
+      <p class="form-subtitle">Start your banking journey with Aegis Capital</p>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Full name</mat-label>
+          <input matInput formControlName="fullName">
+          <mat-icon matPrefix>person_outline</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Email address</mat-label>
+          <input matInput formControlName="email" type="email">
+          <mat-icon matPrefix>mail_outline</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Phone number</mat-label>
+          <input matInput formControlName="phoneNumber" placeholder="+1 555 0100">
+          <mat-icon matPrefix>phone</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Password</mat-label>
+          <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password">
+          <mat-icon matPrefix>lock_outline</mat-icon>
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword" tabindex="-1">
+            <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        @if (form.get('password')?.value) {
+          <div class="strength-meter">
+            <div class="strength-bar">
+              <div class="strength-fill" [style.width]="passwordStrength.width" [style.background]="passwordStrength.color"></div>
+            </div>
+            <span class="strength-label" [style.color]="passwordStrength.color">{{ passwordStrength.label }}</span>
+          </div>
+        }
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Confirm password</mat-label>
+          <input matInput type="password" formControlName="confirmPassword">
+          @if (form.hasError('passwordMismatch') && form.get('confirmPassword')?.touched) {
+            <mat-error>Passwords do not match</mat-error>
+          }
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" class="submit-btn" [disabled]="loading || form.invalid">
+          {{ loading ? 'Creating account...' : 'Create Account' }}
+        </button>
+      </form>
+
+      <p class="auth-switch">
+        Already have an account? <a routerLink="/auth/login">Sign in</a>
+      </p>
+    </div>
+  </div>
+</div>

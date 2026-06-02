@@ -1,0 +1,21 @@
+<div class="account-card" [class.compact]="compact" [style.--accent]="meta.accent">
+  <div class="card-accent" [style.background]="meta.gradient"></div>
+  <div class="card-body">
+    <div class="card-top">
+      <div class="type-icon">
+        <mat-icon>{{ meta.icon }}</mat-icon>
+      </div>
+      <span class="status-badge" [class]="'status-' + account.status.toLowerCase()">
+        {{ account.status }}
+      </span>
+    </div>
+    <div class="type-label">{{ meta.label }} Account</div>
+    <div class="account-number">{{ account.accountNumber }}</div>
+    <div class="balance">{{ account.balance | currency: account.currency:'symbol':'1.2-2' }}</div>
+    @if (!compact) {
+      <div class="card-footer">
+        <span>{{ meta.description }}</span>
+      </div>
+    }
+  </div>
+</div>

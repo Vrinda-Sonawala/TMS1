@@ -1,0 +1,36 @@
+@import 'bootstrap/scss/bootstrap';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+@import 'styles/variables';
+
+:root {
+  --aegis-primary: #1a3a6b;
+  --aegis-dark: #0a1628;
+  --aegis-gold: #c9a227;
+  --aegis-bg: #f4f6f9;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: #f4f6f9;
+  color: #0a1628;
+  -webkit-font-smoothing: antialiased;
+}
+
+.mat-mdc-raised-button.mat-primary {
+  --mdc-protected-button-container-color: #1a3a6b;
+}
+
+.mat-mdc-form-field { width: 100%; }
+
+.mat-mdc-snack-bar-container.snack-success .mdc-snackbar__surface { background: #0d9f6e !important; }
+.mat-mdc-snack-bar-container.snack-error .mdc-snackbar__surface { background: #dc3545 !important; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(10, 22, 40, 0.2); border-radius: 3px; }
+
+.w-100 { width: 100%; }

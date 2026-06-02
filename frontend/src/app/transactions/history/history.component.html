@@ -1,0 +1,102 @@
+<app-page-header title="Transaction History" subtitle="View and search all your transactions" icon="receipt_long"></app-page-header>
+
+<div class="history-page">
+  <!-- Filters -->
+  <form [formGroup]="filterForm" class="filters-bar">
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Account</mat-label>
+      <mat-select formControlName="accountNumber" (selectionChange)="loadHistory()">
+        @for (a of accounts; track a.id) {
+          <mat-option [value]="a.accountNumber">{{ a.accountNumber }} ({{ a.accountType }})</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field search-field">
+      <mat-label>Search</mat-label>
+      <input matInput formControlName="search" placeholder="Reference, account...">
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Type</mat-label>
+      <mat-select formControlName="typeFilter">
+        @for (t of typeFilters; track t) {
+          <mat-option [value]="t">{{ t === 'ALL' ? 'All Types' : t }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Status</mat-label>
+      <mat-select formControlName="statusFilter">
+        @for (s of statusFilters; track s) {
+          <mat-option [value]="s">{{ s === 'ALL' ? 'All Statuses' : s }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-stroked-button type="button" (click)="clearFilters()">
+      <mat-icon>filter_alt_off</mat-icon> Clear
+    </button>
+  </form>
+
+  <!-- Table -->
+  @if (loading) {
+    <div class="loading-state"><mat-spinner diameter="40"></mat-spinner></div>
+  } @else {
+    <div class="table-wrapper">
+      <table mat-table [dataSource]="dataSource" matSort>
+        <ng-container matColumnDef="icon">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let t">
+            <div class="txn-icon" [class]="'txn-' + t.transactionType.toLowerCase()">
+              <mat-icon>{{ getTransactionIcon(t.transactionType) }}</mat-icon>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="referenceNumber">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Reference</th>
+          <td mat-cell *matCellDef="let t" class="mono">{{ t.referenceNumber }}</td>
+        </ng-container>
+        <ng-container matColumnDef="transactionType">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+          <td mat-cell *matCellDef="let t">{{ t.transactionType }}</td>
+        </ng-container>
+        <ng-container matColumnDef="senderAccount">
+          <th mat-header-cell *matHeaderCellDef>From</th>
+          <td mat-cell *matCellDef="let t" class="mono">{{ t.senderAccount || '—' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="receiverAccount">
+          <th mat-header-cell *matHeaderCellDef>To</th>
+          <td mat-cell *matCellDef="let t" class="mono">{{ t.receiverAccount || '—' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount</th>
+          <td mat-cell *matCellDef="let t" class="amount">{{ t.amount | currency:'USD' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="transactionStatus">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+          <td mat-cell *matCellDef="let t">
+            <span class="status-chip" [class]="getStatusClass(t.transactionStatus)">{{ t.transactionStatus }}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+          <td mat-cell *matCellDef="let t">{{ t.createdAt | date:'MMM d, y h:mm a' }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns;" class="table-row"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell no-data" [attr.colspan]="columns.length">
+            No transactions found matching your filters
+          </td>
+        </tr>
+      </table>
+
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 50]" showFirstLastButtons></mat-paginator>
+    </div>
+  }
+</div>

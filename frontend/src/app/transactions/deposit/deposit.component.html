@@ -1,0 +1,47 @@
+<app-page-header title="Deposit Funds" subtitle="Add money to your account securely" icon="add_circle"></app-page-header>
+
+<div class="txn-form-layout">
+  <div class="form-panel">
+    <div class="form-icon deposit"><mat-icon>arrow_downward</mat-icon></div>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Select account</mat-label>
+        <mat-select formControlName="accountNumber">
+          @for (a of accounts; track a.id) {
+            <mat-option [value]="a.accountNumber">
+              {{ a.accountNumber }} — {{ a.accountType }} ({{ a.balance | currency:a.currency }})
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Amount</mat-label>
+        <input matInput type="number" formControlName="amount" min="0.01" step="0.01" placeholder="0.00">
+        <span matTextPrefix>$&nbsp;</span>
+        @if (form.get('amount')?.hasError('min')) {
+          <mat-error>Amount must be greater than zero</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Description (optional)</mat-label>
+        <input matInput formControlName="description" placeholder="e.g. Salary deposit">
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" class="submit-btn" [disabled]="loading || form.invalid">
+        @if (loading) { <mat-spinner diameter="20"></mat-spinner> }
+        @else { Confirm Deposit }
+      </button>
+    </form>
+  </div>
+
+  <div class="info-panel">
+    <h4>Deposit Information</h4>
+    <ul>
+      <li><mat-icon>check_circle</mat-icon> Funds are credited instantly</li>
+      <li><mat-icon>check_circle</mat-icon> All deposits are encrypted & secure</li>
+      <li><mat-icon>check_circle</mat-icon> Transaction reference generated automatically</li>
+    </ul>
+  </div>
+</div>

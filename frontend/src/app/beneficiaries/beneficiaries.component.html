@@ -1,0 +1,78 @@
+<app-page-header title="Beneficiaries" subtitle="Manage your saved transfer recipients" icon="people">
+  <button mat-raised-button color="primary" (click)="showForm = !showForm">
+    <mat-icon>{{ showForm ? 'close' : 'person_add' }}</mat-icon>
+    {{ showForm ? 'Cancel' : 'Add Beneficiary' }}
+  </button>
+</app-page-header>
+
+@if (showForm) {
+  <div class="add-form-card">
+    <h3>Add New Beneficiary</h3>
+    <form [formGroup]="form" (ngSubmit)="add()" class="add-form">
+      <mat-form-field appearance="outline">
+        <mat-label>Nickname</mat-label>
+        <input matInput formControlName="nickname" placeholder="e.g. John Savings">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Account number</mat-label>
+        <input matInput formControlName="beneficiaryAccountNumber">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Bank name</mat-label>
+        <input matInput formControlName="bankName">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>IFSC code</mat-label>
+        <input matInput formControlName="ifscCode">
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Save Beneficiary</button>
+    </form>
+  </div>
+}
+
+<div class="beneficiaries-table">
+  @if (beneficiaries.length === 0) {
+    <div class="empty-state">
+      <mat-icon>people_outline</mat-icon>
+      <h3>No beneficiaries yet</h3>
+      <p>Add beneficiaries for quick transfers</p>
+      <button mat-raised-button color="primary" (click)="showForm = true">
+        <mat-icon>person_add</mat-icon> Add Beneficiary
+      </button>
+    </div>
+  } @else {
+    <table mat-table [dataSource]="beneficiaries">
+      <ng-container matColumnDef="nickname">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let b">
+          <div class="beneficiary-name">
+            <div class="avatar">{{ b.nickname.charAt(0).toUpperCase() }}</div>
+            {{ b.nickname }}
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="beneficiaryAccountNumber">
+        <th mat-header-cell *matHeaderCellDef>Account</th>
+        <td mat-cell *matCellDef="let b" class="mono">{{ b.beneficiaryAccountNumber }}</td>
+      </ng-container>
+      <ng-container matColumnDef="bankName">
+        <th mat-header-cell *matHeaderCellDef>Bank</th>
+        <td mat-cell *matCellDef="let b">{{ b.bankName }}</td>
+      </ng-container>
+      <ng-container matColumnDef="ifscCode">
+        <th mat-header-cell *matHeaderCellDef>IFSC</th>
+        <td mat-cell *matCellDef="let b" class="mono">{{ b.ifscCode }}</td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let b">
+          <button mat-icon-button color="warn" (click)="remove(b.id, b.nickname)" matTooltip="Remove">
+            <mat-icon>delete_outline</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+    </table>
+  }
+</div>

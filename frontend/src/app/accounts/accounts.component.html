@@ -1,0 +1,63 @@
+<app-page-header
+  title="My Accounts"
+  subtitle="Manage your banking accounts and open new ones"
+  icon="account_balance_wallet">
+</app-page-header>
+
+<div class="accounts-layout">
+  <!-- Open Account Panel -->
+  <div class="open-account-panel">
+    <div class="panel-card">
+      <h3>Open New Account</h3>
+      <p>Select an account type to get started</p>
+
+      <div class="type-preview" [style.--accent]="selectedTypeMeta.accent">
+        <div class="preview-icon"><mat-icon>{{ selectedTypeMeta.icon }}</mat-icon></div>
+        <div>
+          <strong>{{ selectedTypeMeta.label }}</strong>
+          <span>{{ selectedTypeMeta.description }}</span>
+        </div>
+      </div>
+
+      <form [formGroup]="createForm" (ngSubmit)="createAccount()">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Account type</mat-label>
+          <mat-select formControlName="accountType">
+            @for (type of accountTypes; track type) {
+              <mat-option [value]="type">
+                <mat-icon class="option-icon">{{ getAccountMeta(type).icon }}</mat-icon>
+                {{ getAccountMeta(type).label }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <button mat-raised-button color="primary" class="w-100 submit-btn" [disabled]="creating">
+          @if (creating) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            Open Account
+          }
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Accounts Grid -->
+  <div class="accounts-list">
+    @if (loading) {
+      <div class="loading-state"><mat-spinner diameter="40"></mat-spinner></div>
+    } @else if (accounts.length === 0) {
+      <div class="empty-state">
+        <mat-icon>account_balance</mat-icon>
+        <h3>No accounts yet</h3>
+        <p>Open your first account to start banking with Aegis Capital</p>
+      </div>
+    } @else {
+      <div class="accounts-grid">
+        @for (account of accounts; track account.id) {
+          <app-account-card [account]="account"></app-account-card>
+        }
+      </div>
+    }
+  </div>
+</div>

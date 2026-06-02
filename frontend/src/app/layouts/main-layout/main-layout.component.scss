@@ -1,0 +1,136 @@
+@import '../../../styles/variables';
+
+.sidenav-container {
+  height: 100vh;
+  background: $surface-muted;
+}
+
+.aegis-sidenav {
+  width: $sidebar-width;
+  background: linear-gradient(180deg, $primary-dark 0%, #0d2240 100%);
+  border-right: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidenav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 1.5rem 1.25rem;
+  border-bottom: 1px solid $border;
+
+  mat-icon {
+    color: $accent-gold;
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .brand-name {
+    display: block;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.02em;
+  }
+
+  .brand-tag {
+    display: block;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+}
+
+.nav-list {
+  flex: 1;
+  padding: 1rem 0.75rem;
+
+  a {
+    border-radius: $radius-sm;
+    margin-bottom: 4px;
+    color: rgba(255, 255, 255, 0.7);
+    transition: all $transition;
+
+    mat-icon { color: rgba(255, 255, 255, 0.5); }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    &.active {
+      background: rgba(201, 162, 39, 0.18);
+      color: $accent-gold-light;
+
+      mat-icon { color: $accent-gold; }
+    }
+  }
+}
+
+.sidenav-footer {
+  padding: 1rem;
+  border-top: 1px solid $border;
+
+  .logout-btn {
+    width: 100%;
+    color: rgba(255, 255, 255, 0.8);
+    border-color: rgba(255, 255, 255, 0.2);
+
+    mat-icon { margin-right: 8px; font-size: 18px; }
+    &:hover { background: rgba(220, 53, 69, 0.15); border-color: rgba(220, 53, 69, 0.4); color: #ff6b7a; }
+  }
+}
+
+.aegis-toolbar {
+  background: $surface;
+  color: $text-primary;
+  box-shadow: $shadow-sm;
+  height: $navbar-height;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid rgba(10, 22, 40, 0.06);
+}
+
+.toolbar-spacer { flex: 1; }
+
+.toolbar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-info {
+  text-align: right;
+
+  .user-name {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: $text-primary;
+  }
+
+  .user-email {
+    display: block;
+    font-size: 0.75rem;
+    color: $text-muted;
+  }
+}
+
+.main-content {
+  padding: 2rem;
+  min-height: calc(100vh - #{$navbar-height});
+  animation: fadeIn 0.35s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .main-content { padding: 1rem; }
+}

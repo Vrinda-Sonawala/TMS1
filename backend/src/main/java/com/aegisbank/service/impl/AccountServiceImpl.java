@@ -108,8 +108,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     private Account findAccountOrThrow(String accountNumber) {
-        return accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new AccountNotFoundException("Account not found: " + accountNumber));
+        String cleanAccountNumber = accountNumber.trim().toUpperCase();
+        return accountRepository.findByAccountNumber(cleanAccountNumber)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found: " + cleanAccountNumber));
     }
 
     private User findUserByEmail(String email) {

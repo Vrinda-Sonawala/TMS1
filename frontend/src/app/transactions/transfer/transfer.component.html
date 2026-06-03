@@ -47,7 +47,7 @@
           <mat-error>Recipient account is required</mat-error>
         }
         @if (form.get('receiverAccountNumber')?.hasError('pattern')) {
-          <mat-error>Enter a valid account number</mat-error>
+          <mat-error>Please enter valid account number starting with AC followed by 18 digits</mat-error>
         }
         @if (form.get('receiverAccountNumber')?.hasError('sameAccount')) {
           <mat-error>Cannot transfer to the same account</mat-error>

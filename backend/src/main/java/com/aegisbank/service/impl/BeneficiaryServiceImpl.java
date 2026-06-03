@@ -34,17 +34,19 @@ public class BeneficiaryServiceImpl implements BeneficiaryService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        if (!accountRepository.existsByAccountNumber(request.getBeneficiaryAccountNumber())) {
+        String beneficiaryAccountNumber = request.getBeneficiaryAccountNumber().trim().toUpperCase();
+
+        if (!accountRepository.existsByAccountNumber(beneficiaryAccountNumber)) {
             throw new AccountNotFoundException("Beneficiary account number does not exist in the bank system");
         }
 
-        if (beneficiaryRepository.existsByUserIdAndBeneficiaryAccountNumber(user.getId(), request.getBeneficiaryAccountNumber())) {
+        if (beneficiaryRepository.existsByUserIdAndBeneficiaryAccountNumber(user.getId(), beneficiaryAccountNumber)) {
             throw new DuplicateResourceException("This beneficiary account number is already registered");
         }
 
         Beneficiary beneficiary = Beneficiary.builder()
                 .nickname(request.getNickname())
-                .beneficiaryAccountNumber(request.getBeneficiaryAccountNumber())
+                .beneficiaryAccountNumber(beneficiaryAccountNumber)
                 .bankName(request.getBankName())
                 .ifscCode(request.getIfscCode())
                 .user(user)

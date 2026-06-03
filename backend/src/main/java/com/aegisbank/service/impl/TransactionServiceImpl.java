@@ -108,21 +108,22 @@ public class TransactionServiceImpl implements TransactionService {
     public TransactionResponse transfer(TransferRequest request, String userEmail) {
         validatePositiveAmount(request.getAmount());
 
-        if (request.getSenderAccountNumber().equals(request.getReceiverAccountNumber())) {
+        String senderAcc = request.getSenderAccountNumber().trim().toUpperCase();
+        String receiverAcc = request.getReceiverAccountNumber().trim().toUpperCase();
+
+        if (senderAcc.equals(receiverAcc)) {
             throw new InvalidTransactionException("Cannot transfer to the same account");
         }
 
         // Lock accounts in consistent order to prevent deadlocks
-        String firstAcc = request.getSenderAccountNumber().compareTo(request.getReceiverAccountNumber()) < 0
-                ? request.getSenderAccountNumber() : request.getReceiverAccountNumber();
-        String secondAcc = firstAcc.equals(request.getSenderAccountNumber())
-                ? request.getReceiverAccountNumber() : request.getSenderAccountNumber();
+        String firstAcc = senderAcc.compareTo(receiverAcc) < 0 ? senderAcc : receiverAcc;
+        String secondAcc = firstAcc.equals(senderAcc) ? receiverAcc : senderAcc;
 
         Account first = lockAccount(firstAcc);
         Account second = lockAccount(secondAcc);
 
-        Account sender = first.getAccountNumber().equals(request.getSenderAccountNumber()) ? first : second;
-        Account receiver = first.getAccountNumber().equals(request.getReceiverAccountNumber()) ? first : second;
+        Account sender = first.getAccountNumber().equals(senderAcc) ? first : second;
+        Account receiver = first.getAccountNumber().equals(receiverAcc) ? first : second;
 
         authorizeAccountAccess(sender, userEmail);
         accountTypeValidator.validateTransfer(sender, receiver);
@@ -154,21 +155,22 @@ public class TransactionServiceImpl implements TransactionService {
     public TransactionResponse selfTransfer(TransferRequest request, String userEmail) {
         validatePositiveAmount(request.getAmount());
 
-        if (request.getSenderAccountNumber().equals(request.getReceiverAccountNumber())) {
+        String senderAcc = request.getSenderAccountNumber().trim().toUpperCase();
+        String receiverAcc = request.getReceiverAccountNumber().trim().toUpperCase();
+
+        if (senderAcc.equals(receiverAcc)) {
             throw new InvalidTransactionException("Cannot transfer to the same account");
         }
 
         // Lock accounts in consistent order to prevent deadlocks
-        String firstAcc = request.getSenderAccountNumber().compareTo(request.getReceiverAccountNumber()) < 0
-                ? request.getSenderAccountNumber() : request.getReceiverAccountNumber();
-        String secondAcc = firstAcc.equals(request.getSenderAccountNumber())
-                ? request.getReceiverAccountNumber() : request.getSenderAccountNumber();
+        String firstAcc = senderAcc.compareTo(receiverAcc) < 0 ? senderAcc : receiverAcc;
+        String secondAcc = firstAcc.equals(senderAcc) ? receiverAcc : senderAcc;
 
         Account first = lockAccount(firstAcc);
         Account second = lockAccount(secondAcc);
 
-        Account sender = first.getAccountNumber().equals(request.getSenderAccountNumber()) ? first : second;
-        Account receiver = first.getAccountNumber().equals(request.getReceiverAccountNumber()) ? first : second;
+        Account sender = first.getAccountNumber().equals(senderAcc) ? first : second;
+        Account receiver = first.getAccountNumber().equals(receiverAcc) ? first : second;
 
         // Authorize access: both sender and receiver must belong to the logged-in user
         authorizeAccountAccess(sender, userEmail);
@@ -213,16 +215,18 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     @Transactional(readOnly = true)
     public List<TransactionResponse> getTransactionHistory(String accountNumber, String userEmail) {
-        Account account = accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new AccountNotFoundException("Account not found: " + accountNumber));
+        String cleanAccountNumber = accountNumber.trim().toUpperCase();
+        Account account = accountRepository.findByAccountNumber(cleanAccountNumber)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found: " + cleanAccountNumber));
         authorizeAccountAccess(account, userEmail);
         return entityMapper.toTransactionResponseList(
-                transactionRepository.findByAccountNumber(accountNumber));
+                transactionRepository.findByAccountNumber(cleanAccountNumber));
     }
 
     private Account lockAccount(String accountNumber) {
-        return accountRepository.findByAccountNumberForUpdate(accountNumber)
-                .orElseThrow(() -> new AccountNotFoundException("Account not found: " + accountNumber));
+        String cleanAccountNumber = accountNumber.trim().toUpperCase();
+        return accountRepository.findByAccountNumberForUpdate(cleanAccountNumber)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found: " + cleanAccountNumber));
     }
 
     private Transaction persistTransaction(String sender, String receiver, TransactionType type,

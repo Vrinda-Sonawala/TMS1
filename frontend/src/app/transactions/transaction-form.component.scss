@@ -2,97 +2,151 @@
 
 .txn-form-layout {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: 1fr 340px;
   gap: 2rem;
   align-items: start;
+  padding: 1.5rem 0;
 
-  @media (max-width: 768px) { grid-template-columns: 1fr; }
+  @media (max-width: 992px) { 
+    grid-template-columns: 1fr; 
+    gap: 1.5rem;
+  }
 }
 
 .form-panel {
-  background: $surface;
+  @include glass-card;
   border-radius: $radius-lg;
-  padding: 2rem;
-  box-shadow: $shadow-sm;
-  border: 1px solid rgba(10, 22, 40, 0.06);
+  padding: 2.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 
   form {
     display: grid;
-    gap: 1.25rem;
+    gap: 1.5rem;
   }
 }
 
 .form-icon {
-  width: 56px;
-  height: 56px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 
-  mat-icon { font-size: 28px; width: 28px; height: 28px; color: #fff; }
+  mat-icon { font-size: 30px; width: 30px; height: 30px; color: #fff; }
 
-  &.deposit { background: linear-gradient(135deg, $success, #0a7a55); }
-  &.withdraw { background: linear-gradient(135deg, $error, #b02a37); }
+  &.deposit { background: linear-gradient(135deg, $success, #0d9f6e); }
+  &.withdraw { background: linear-gradient(135deg, $error, #b91c1c); }
   &.transfer { background: linear-gradient(135deg, $primary, $primary-light); }
 }
 
 .w-100 { width: 100%; }
 
 .balance-info {
-  background: $surface-muted;
-  padding: 0.75rem 1rem;
-  border-radius: $radius-sm;
-  font-size: 0.9rem;
+  background: rgba(6, 182, 212, 0.1) !important;
+  border: 1px solid rgba(6, 182, 212, 0.25) !important;
+  padding: 1rem 1.25rem;
+  border-radius: $radius-md;
+  font-size: 0.95rem;
   color: $text-secondary;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-  strong { color: $text-primary; }
+  strong { 
+    color: #ffffff; 
+    font-size: 1.15rem; 
+    font-weight: 700;
+  }
 }
 
 .submit-btn {
   width: 100%;
-  height: 48px;
+  height: 50px;
   font-weight: 600;
-  margin-top: 0.5rem;
-  border-radius: $radius-sm !important;
+  font-size: 1rem;
+  margin-top: 1rem;
+  border-radius: $radius-md !important;
+  background: linear-gradient(135deg, $primary 0%, $primary-light 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px 0 rgba(29, 78, 216, 0.35) !important;
+  transition: all $transition !important;
+
+  &:hover:not([disabled]) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px 0 rgba(29, 78, 216, 0.45) !important;
+    filter: brightness(1.1);
+  }
+
+  &:disabled {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: rgba(255, 255, 255, 0.3) !important;
+    box-shadow: none !important;
+    cursor: not-allowed;
+  }
 }
 
-.withdraw-btn { background: $error !important; }
+.withdraw-btn { 
+  background: linear-gradient(135deg, $error, #b91c1c) !important;
+  box-shadow: 0 4px 14px 0 rgba(239, 68, 68, 0.35) !important;
+
+  &:hover:not([disabled]) {
+    box-shadow: 0 6px 20px 0 rgba(239, 68, 68, 0.45) !important;
+  }
+}
 
 .info-panel {
-  background: $surface;
+  @include glass-card;
   border-radius: $radius-lg;
-  padding: 1.5rem;
-  box-shadow: $shadow-sm;
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 
-  h4 { font-size: 0.95rem; font-weight: 700; color: $text-primary; margin-bottom: 1rem; }
+  h4 { 
+    font-size: 1.1rem; 
+    font-weight: 700; 
+    color: #ffffff; 
+    margin-bottom: 1.25rem; 
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
 
   ul { list-style: none; padding: 0; margin: 0; }
 
   li {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 0.5rem 0;
-    font-size: 0.85rem;
+    gap: 12px;
+    padding: 0.75rem 0;
+    font-size: 0.9rem;
     color: $text-secondary;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 
-    mat-icon { font-size: 18px; width: 18px; height: 18px; color: $primary; }
+    &:last-child {
+      border-bottom: none;
+    }
+
+    mat-icon { 
+      font-size: 18px; 
+      width: 18px; 
+      height: 18px; 
+      color: $accent-cyan; 
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 }
 
 @media (max-width: 768px) {
-  .form-panel,
-  .info-panel {
-    padding: 1.25rem;
-    border-radius: $radius-md;
+  .form-panel {
+    padding: 1.5rem;
   }
-
-  .form-icon {
-    width: 48px;
-    height: 48px;
-    margin-bottom: 1rem;
+  .info-panel {
+    padding: 1.5rem;
   }
 }

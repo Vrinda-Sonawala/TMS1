@@ -3,6 +3,7 @@ package com.aegisbank.dto.request;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +18,7 @@ import java.math.BigDecimal;
 public class TransactionRequest {
 
     @NotBlank(message = "Account number is required")
+    @Pattern(regexp = "^AC\\d{18}$", message = "Account number must start with AC followed by exactly 18 digits")
     private String accountNumber;
 
     @NotNull(message = "Amount is required")

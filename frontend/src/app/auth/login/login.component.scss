@@ -81,10 +81,9 @@ h1 {
 .form-card {
   width: 100%;
   max-width: 400px;
-  background: $surface;
+  @include glass-card;
   border-radius: $radius-xl;
   padding: 2.5rem;
-  box-shadow: $shadow-lg;
   animation: slideInRight 0.6s ease;
 
   h2 {

@@ -1,14 +1,13 @@
 @import '../../styles/variables';
 
 .add-form-card {
-  background: $surface;
+  @include glass-card;
   border-radius: $radius-lg;
-  padding: 1.75rem;
+  padding: 2rem;
   margin-bottom: 1.5rem;
-  box-shadow: $shadow-sm;
   animation: slideDown 0.3s ease;
 
-  h3 { font-size: 1rem; font-weight: 700; color: $text-primary; margin-bottom: 1.25rem; }
+  h3 { font-size: 1.15rem; font-weight: 700; color: $text-primary; margin-bottom: 1.5rem; }
 }
 
 .add-form {
@@ -25,14 +24,20 @@
 }
 
 .beneficiaries-table {
-  background: $surface;
+  @include glass-card;
   border-radius: $radius-lg;
   overflow: hidden;
-  box-shadow: $shadow-sm;
 
   table { width: 100%; }
   .responsive-table table { min-width: 760px; }
-  th { background: $surface-muted; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; color: $text-secondary; }
+  
+  th { 
+    background: rgba(255, 255, 255, 0.03) !important; 
+    font-weight: 600; 
+    font-size: 0.75rem; 
+    text-transform: uppercase; 
+    color: $text-secondary; 
+  }
 }
 
 .beneficiary-name {

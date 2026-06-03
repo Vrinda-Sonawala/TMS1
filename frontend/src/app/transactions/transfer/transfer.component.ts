@@ -48,12 +48,20 @@ export class TransferComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       senderAccountNumber: ['', Validators.required],
-      receiverAccountNumber: ['', [Validators.required, Validators.pattern(/^[0-9A-Za-z-]{6,30}$/)]],
+      receiverAccountNumber: ['', [Validators.required, Validators.pattern(/^AC\d{18}$/)]],
       amount: ['', [Validators.required, Validators.min(0.01)]],
       description: ['']
     });
     this.form.get('senderAccountNumber')?.valueChanges.subscribe(num => {
       this.selectedSender = this.accounts.find(a => a.accountNumber === num) || null;
+    });
+    this.form.get('receiverAccountNumber')?.valueChanges.subscribe(val => {
+      if (val && typeof val === 'string') {
+        const trimmed = val.replace(/\s+/g, '');
+        if (val !== trimmed) {
+          this.form.get('receiverAccountNumber')?.setValue(trimmed, { emitEvent: false });
+        }
+      }
     });
   }
 

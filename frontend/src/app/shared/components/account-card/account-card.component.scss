@@ -3,11 +3,10 @@
 .account-card {
   position: relative;
   border-radius: $radius-lg;
-  background: $surface;
-  box-shadow: $shadow-sm;
+  @include glass-card;
   overflow: hidden;
   @include hover-lift;
-  border: 1px solid rgba(10, 22, 40, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .card-accent {
@@ -30,7 +29,7 @@
   width: 44px;
   height: 44px;
   border-radius: $radius-sm;
-  background: color-mix(in srgb, var(--accent) 12%, white);
+  background: color-mix(in srgb, var(--accent) 18%, rgba(0, 0, 0, 0.45));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -51,9 +50,9 @@
   border-radius: 20px;
   letter-spacing: 0.04em;
 
-  &.status-active { background: rgba(13, 159, 110, 0.12); color: $success; }
-  &.status-blocked, &.status-frozen { background: rgba(220, 53, 69, 0.12); color: $error; }
-  &.status-closed { background: rgba(139, 149, 165, 0.15); color: $text-muted; }
+  &.status-active { background: rgba(13, 159, 110, 0.15); color: $success; }
+  &.status-blocked, &.status-frozen { background: rgba(220, 53, 69, 0.15); color: $error; }
+  &.status-closed { background: rgba(139, 149, 165, 0.2); color: $text-muted; }
 }
 
 .type-label {
@@ -103,7 +102,7 @@
 .card-footer {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(10, 22, 40, 0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 0.8rem;
   color: $text-muted;
 }

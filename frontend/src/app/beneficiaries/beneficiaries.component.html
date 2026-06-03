@@ -23,7 +23,7 @@
           <mat-error>Account number is required</mat-error>
         }
         @if (form.get('beneficiaryAccountNumber')?.hasError('pattern')) {
-          <mat-error>Enter a valid account number</mat-error>
+          <mat-error>Please enter valid account number starting with AC followed by 18 digits</mat-error>
         }
         @if (form.get('beneficiaryAccountNumber')?.hasError('duplicate')) {
           <mat-error>This beneficiary already exists</mat-error>

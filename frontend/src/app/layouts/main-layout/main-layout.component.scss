@@ -2,13 +2,14 @@
 
 .sidenav-container {
   height: 100vh;
-  background: $surface-muted;
+  background: transparent;
 }
 
 .aegis-sidenav {
   width: $sidebar-width;
-  background: linear-gradient(180deg, $primary-dark 0%, #0d2240 100%);
-  border-right: none;
+  background: linear-gradient(180deg, rgba(8, 17, 32, 0.95) 0%, rgba(13, 34, 64, 0.95) 100%);
+  backdrop-filter: blur(24px);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
 }
@@ -18,7 +19,7 @@
   align-items: center;
   gap: 12px;
   padding: 1.5rem 1.25rem;
-  border-bottom: 1px solid $border;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 
   mat-icon {
     color: $accent-gold;
@@ -50,29 +51,64 @@
 
   a {
     border-radius: $radius-sm;
-    margin-bottom: 4px;
-    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 8px;
+    color: rgba(255, 255, 255, 0.9) !important;
     transition: all $transition;
+    position: relative;
+    padding-left: 1.25rem;
+    height: 48px;
+    display: flex;
+    align-items: center;
 
-    mat-icon { color: rgba(255, 255, 255, 0.5); }
+    ::ng-deep .mdc-list-item__primary-text,
+    ::ng-deep .mat-mdc-list-item-title {
+      color: rgba(255, 255, 255, 0.9) !important;
+      font-weight: 500 !important;
+      font-size: 0.95rem !important;
+    }
+
+    mat-icon { 
+      color: rgba(255, 255, 255, 0.7) !important; 
+      transition: color $transition, transform $transition;
+      margin-right: 12px;
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
+    }
 
     &:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: #fff;
+      background: rgba(255, 255, 255, 0.08) !important;
+      padding-left: 1.5rem;
+      
+      ::ng-deep .mdc-list-item__primary-text,
+      ::ng-deep .mat-mdc-list-item-title {
+        color: #ffffff !important;
+      }
+      mat-icon { 
+        color: #ffffff !important; 
+        transform: scale(1.1);
+      }
     }
 
     &.active {
-      background: rgba(201, 162, 39, 0.18);
-      color: $accent-gold-light;
+      background: rgba(29, 78, 216, 0.25) !important;
+      color: #ffffff !important;
+      border-left: 4px solid $accent-cyan !important;
+      padding-left: 1rem;
 
-      mat-icon { color: $accent-gold; }
+      ::ng-deep .mdc-list-item__primary-text,
+      ::ng-deep .mat-mdc-list-item-title {
+        color: #ffffff !important;
+        font-weight: 600 !important;
+      }
+      mat-icon { color: $accent-cyan !important; }
     }
   }
 }
 
 .sidenav-footer {
   padding: 1rem;
-  border-top: 1px solid $border;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 
   .logout-btn {
     width: 100%;
@@ -85,14 +121,15 @@
 }
 
 .aegis-toolbar {
-  background: $surface;
+  background: rgba(8, 17, 32, 0.4) !important;
+  backdrop-filter: blur(20px);
   color: $text-primary;
-  box-shadow: $shadow-sm;
+  box-shadow: none;
   height: $navbar-height;
   position: sticky;
   top: 0;
   z-index: 100;
-  border-bottom: 1px solid rgba(10, 22, 40, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .toolbar-spacer { flex: 1; }
@@ -109,14 +146,14 @@
   .user-name {
     display: block;
     font-weight: 600;
-    font-size: 0.9rem;
-    color: $text-primary;
+    font-size: 0.95rem;
+    color: #ffffff !important;
   }
 
   .user-email {
     display: block;
-    font-size: 0.75rem;
-    color: $text-muted;
+    font-size: 0.78rem;
+    color: #cbd5e1 !important;
   }
 }
 

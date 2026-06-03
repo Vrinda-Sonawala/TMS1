@@ -43,9 +43,17 @@ export class BeneficiariesComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       nickname: ['', [Validators.required, Validators.maxLength(100)]],
-      beneficiaryAccountNumber: ['', [Validators.required, Validators.pattern(/^[0-9A-Za-z-]{6,30}$/), Validators.maxLength(30)]],
+      beneficiaryAccountNumber: ['', [Validators.required, Validators.pattern(/^AC\d{18}$/)]],
       bankName: ['', [Validators.required, Validators.maxLength(150)]],
       ifscCode: ['', [Validators.required, Validators.pattern(/^[A-Za-z0-9-]{4,20}$/), Validators.maxLength(20)]]
+    });
+    this.form.get('beneficiaryAccountNumber')?.valueChanges.subscribe(val => {
+      if (val && typeof val === 'string') {
+        const trimmed = val.replace(/\s+/g, '');
+        if (val !== trimmed) {
+          this.form.get('beneficiaryAccountNumber')?.setValue(trimmed, { emitEvent: false });
+        }
+      }
     });
   }
 

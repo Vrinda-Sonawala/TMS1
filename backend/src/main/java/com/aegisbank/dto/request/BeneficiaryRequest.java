@@ -2,6 +2,7 @@ package com.aegisbank.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class BeneficiaryRequest {
     private String nickname;
 
     @NotBlank(message = "Beneficiary account number is required")
+    @Pattern(regexp = "^AC\\d{18}$", message = "Account number must start with AC followed by exactly 18 digits")
     private String beneficiaryAccountNumber;
 
     @NotBlank(message = "Bank name is required")

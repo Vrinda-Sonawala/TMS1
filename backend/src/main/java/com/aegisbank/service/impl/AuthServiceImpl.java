@@ -22,12 +22,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.aegisbank.entity.Account;
+import com.aegisbank.enums.AccountType;
+import com.aegisbank.enums.AccountStatus;
+import com.aegisbank.repository.AccountRepository;
+import com.aegisbank.config.BankingProperties;
+import com.aegisbank.util.ReferenceGenerator;
+import java.math.BigDecimal;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
+    private final BankingProperties bankingProperties;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtProperties jwtProperties;
@@ -52,6 +62,19 @@ public class AuthServiceImpl implements AuthService {
 
         User saved = userRepository.save(user);
         log.info("New user registered: {}", saved.getEmail());
+
+        Account account = Account.builder()
+                .accountNumber(ReferenceGenerator.generateAccountNumber())
+                .accountType(AccountType.SAVINGS)
+                .balance(BigDecimal.ZERO)
+                .status(AccountStatus.ACTIVE)
+                .currency(bankingProperties.getDefaultCurrency())
+                .minimumBalance(bankingProperties.getSavings().getMinimumBalance())
+                .user(saved)
+                .build();
+        accountRepository.save(account);
+        log.info("Default SAVINGS account created: {} for user: {}", account.getAccountNumber(), saved.getEmail());
+
         return buildAuthResponse(saved);
     }
 

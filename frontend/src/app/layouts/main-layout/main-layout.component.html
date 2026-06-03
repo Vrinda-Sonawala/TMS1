@@ -20,6 +20,7 @@
         <a mat-list-item
            [routerLink]="item.route"
            routerLinkActive="active"
+           [routerLinkActiveOptions]="{exact: item.route === '/dashboard'}"
            (click)="closeDrawerOnMobile()">
           <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
           <span matListItemTitle>{{ item.label }}</span>

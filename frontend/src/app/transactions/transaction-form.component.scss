@@ -15,6 +15,11 @@
   padding: 2rem;
   box-shadow: $shadow-sm;
   border: 1px solid rgba(10, 22, 40, 0.06);
+
+  form {
+    display: grid;
+    gap: 1.25rem;
+  }
 }
 
 .form-icon {
@@ -33,7 +38,7 @@
   &.transfer { background: linear-gradient(135deg, $primary, $primary-light); }
 }
 
-.w-100 { width: 100%; margin-bottom: 0.25rem; }
+.w-100 { width: 100%; }
 
 .balance-info {
   background: $surface-muted;
@@ -75,5 +80,19 @@
     color: $text-secondary;
 
     mat-icon { font-size: 18px; width: 18px; height: 18px; color: $primary; }
+  }
+}
+
+@media (max-width: 768px) {
+  .form-panel,
+  .info-panel {
+    padding: 1.25rem;
+    border-radius: $radius-md;
+  }
+
+  .form-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
   }
 }

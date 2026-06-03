@@ -11,11 +11,30 @@
       <h3>Open New Account</h3>
       <p>Select an account type to get started</p>
 
+      <div class="type-card-grid" role="radiogroup" aria-label="Account type">
+        @for (type of accountTypes; track type) {
+          <button
+            type="button"
+            class="type-card"
+            [class.selected]="createForm.value.accountType === type"
+            [style.--accent]="getAccountMeta(type).accent"
+            (click)="createForm.patchValue({ accountType: type })">
+            <mat-icon>{{ getAccountMeta(type).icon }}</mat-icon>
+            <span>{{ getAccountMeta(type).label }}</span>
+          </button>
+        }
+      </div>
+
       <div class="type-preview" [style.--accent]="selectedTypeMeta.accent">
         <div class="preview-icon"><mat-icon>{{ selectedTypeMeta.icon }}</mat-icon></div>
         <div>
-          <strong>{{ selectedTypeMeta.label }}</strong>
+          <strong>{{ selectedTypeMeta.label }} Account</strong>
           <span>{{ selectedTypeMeta.description }}</span>
+          <ul>
+            @for (rule of selectedTypeMeta.rules; track rule) {
+              <li>{{ rule }}</li>
+            }
+          </ul>
         </div>
       </div>
 
@@ -31,9 +50,9 @@
             }
           </mat-select>
         </mat-form-field>
-        <button mat-raised-button color="primary" class="w-100 submit-btn" [disabled]="creating">
+        <button mat-raised-button color="primary" class="w-100 submit-btn" [disabled]="creating || createForm.invalid">
           @if (creating) {
-            <mat-spinner diameter="20"></mat-spinner>
+            <span class="button-spinner"><mat-spinner diameter="20"></mat-spinner></span>
           } @else {
             Open Account
           }

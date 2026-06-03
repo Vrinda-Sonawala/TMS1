@@ -22,18 +22,33 @@
           <mat-label>Full name</mat-label>
           <input matInput formControlName="fullName">
           <mat-icon matPrefix>person_outline</mat-icon>
+          @if (form.get('fullName')?.hasError('required') && form.get('fullName')?.touched) {
+            <mat-error>Full name is required</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Email address</mat-label>
           <input matInput formControlName="email" type="email">
           <mat-icon matPrefix>mail_outline</mat-icon>
+          @if (form.get('email')?.hasError('required') && form.get('email')?.touched) {
+            <mat-error>Email is required</mat-error>
+          }
+          @if (form.get('email')?.hasError('email')) {
+            <mat-error>Enter a valid email</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Phone number</mat-label>
           <input matInput formControlName="phoneNumber" placeholder="+1 555 0100">
           <mat-icon matPrefix>phone</mat-icon>
+          @if (form.get('phoneNumber')?.hasError('required') && form.get('phoneNumber')?.touched) {
+            <mat-error>Phone number is required</mat-error>
+          }
+          @if (form.get('phoneNumber')?.hasError('pattern')) {
+            <mat-error>Enter a valid phone number</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="w-100">
@@ -43,6 +58,12 @@
           <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword" tabindex="-1">
             <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
+          @if (form.get('password')?.hasError('required') && form.get('password')?.touched) {
+            <mat-error>Password is required</mat-error>
+          }
+          @if (form.get('password')?.hasError('minlength')) {
+            <mat-error>Use at least 8 characters</mat-error>
+          }
         </mat-form-field>
 
         @if (form.get('password')?.value) {
@@ -63,7 +84,8 @@
         </mat-form-field>
 
         <button mat-raised-button color="primary" class="submit-btn" [disabled]="loading || form.invalid">
-          {{ loading ? 'Creating account...' : 'Create Account' }}
+          @if (loading) { <span class="button-spinner"><mat-spinner diameter="20"></mat-spinner></span> }
+          @else { Create Account }
         </button>
       </form>
 

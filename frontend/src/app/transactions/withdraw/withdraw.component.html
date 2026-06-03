@@ -8,16 +8,20 @@
         <mat-label>From account</mat-label>
         <mat-select formControlName="accountNumber">
           @for (a of accounts; track a.id) {
-            <mat-option [value]="a.accountNumber">
-              {{ a.accountNumber }} — {{ a.balance | currency:a.currency }}
+            <mat-option [value]="a.accountNumber" [disabled]="!getAccountMeta(a.accountType).canWithdraw || a.status !== 'ACTIVE'">
+              {{ a.accountNumber }} - {{ getAccountMeta(a.accountType).label }} ({{ a.balance | currency:a.currency }})
             </mat-option>
           }
         </mat-select>
+        @if (form.get('accountNumber')?.hasError('required') && form.get('accountNumber')?.touched) {
+          <mat-error>Select an account</mat-error>
+        }
       </mat-form-field>
 
       @if (selectedAccount) {
         <div class="balance-info">
-          Available: <strong>{{ selectedAccount.balance | currency:selectedAccount.currency }}</strong>
+          {{ getAccountMeta(selectedAccount.accountType).balanceLabel }}:
+          <strong>{{ selectedAvailable | currency:selectedAccount.currency }}</strong>
         </div>
       }
 
@@ -25,6 +29,12 @@
         <mat-label>Amount</mat-label>
         <input matInput type="number" formControlName="amount" min="0.01" step="0.01">
         <span matTextPrefix>$&nbsp;</span>
+        @if (form.get('amount')?.hasError('required') && form.get('amount')?.touched) {
+          <mat-error>Amount is required</mat-error>
+        }
+        @if (form.get('amount')?.hasError('min')) {
+          <mat-error>Amount must be greater than zero</mat-error>
+        }
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
@@ -33,7 +43,7 @@
       </mat-form-field>
 
       <button mat-raised-button color="warn" class="submit-btn withdraw-btn" [disabled]="loading || form.invalid">
-        @if (loading) { <mat-spinner diameter="20"></mat-spinner> }
+        @if (loading) { <span class="button-spinner"><mat-spinner diameter="20"></mat-spinner></span> }
         @else { Confirm Withdrawal }
       </button>
     </form>
@@ -42,9 +52,13 @@
   <div class="info-panel">
     <h4>Withdrawal Rules</h4>
     <ul>
-      <li><mat-icon>info</mat-icon> Savings accounts have daily limits</li>
-      <li><mat-icon>info</mat-icon> Minimum balance rules apply</li>
-      <li><mat-icon>info</mat-icon> Fixed deposit accounts cannot withdraw</li>
+      @if (selectedAccount) {
+        @for (rule of getAccountMeta(selectedAccount.accountType).rules; track rule) {
+          <li><mat-icon>info</mat-icon>{{ rule }}</li>
+        }
+      } @else {
+        <li><mat-icon>info</mat-icon>Select an account to view rules</li>
+      }
     </ul>
   </div>
 </div>

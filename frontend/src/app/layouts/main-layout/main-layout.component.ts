@@ -46,6 +46,7 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     { label: 'Deposit', icon: 'add_circle_outline', route: '/transactions/deposit' },
     { label: 'Withdraw', icon: 'remove_circle_outline', route: '/transactions/withdraw' },
     { label: 'Transfer', icon: 'swap_horiz', route: '/transactions/transfer' },
+    { label: 'Self Transfer', icon: 'sync_alt', route: '/transactions/self-transfer' },
     { label: 'Beneficiaries', icon: 'people_outline', route: '/beneficiaries' },
     { label: 'Transactions', icon: 'receipt_long', route: '/transactions/history' }
   ];
@@ -78,6 +79,15 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     if (this.isMobile && this.drawer) {
       this.drawer.close();
     }
+  }
+
+  navigate(route: string): void {
+    this.router.navigateByUrl(route);
+    this.closeDrawerOnMobile();
+  }
+
+  isActive(route: string): boolean {
+    return this.router.url === route || this.router.url.startsWith(`${route}/`);
   }
 
   logout(): void {

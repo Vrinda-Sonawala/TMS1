@@ -53,6 +53,15 @@ public class TransactionController {
         return ResponseEntity.ok(ApiResponse.success("Transfer successful", response));
     }
 
+    @PostMapping("/self-transfer")
+    @Operation(summary = "Transfer funds between own accounts (atomic operation)")
+    public ResponseEntity<ApiResponse<TransactionResponse>> selfTransfer(
+            @Valid @RequestBody TransferRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        TransactionResponse response = transactionService.selfTransfer(request, userDetails.getUsername());
+        return ResponseEntity.ok(ApiResponse.success("Self-transfer successful", response));
+    }
+
     @GetMapping("/history/{accountNumber}")
     @Operation(summary = "Get transaction history for an account")
     public ResponseEntity<ApiResponse<List<TransactionResponse>>> getHistory(

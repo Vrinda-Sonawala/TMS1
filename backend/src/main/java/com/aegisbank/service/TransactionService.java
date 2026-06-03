@@ -10,5 +10,6 @@ public interface TransactionService {
     TransactionResponse deposit(TransactionRequest request, String userEmail);
     TransactionResponse withdraw(TransactionRequest request, String userEmail);
     TransactionResponse transfer(TransferRequest request, String userEmail);
+    TransactionResponse selfTransfer(TransferRequest request, String userEmail);
     List<TransactionResponse> getTransactionHistory(String accountNumber, String userEmail);
 }

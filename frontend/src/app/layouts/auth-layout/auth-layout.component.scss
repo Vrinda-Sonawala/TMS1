@@ -4,7 +4,9 @@
   min-height: 100vh;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, $primary-dark 0%, $primary 40%, #0d2847 100%);
+  background:
+    linear-gradient(135deg, rgba(10, 22, 40, 0.96) 0%, rgba(26, 58, 107, 0.96) 100%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 72px);
 }
 
 .auth-bg {
@@ -16,16 +18,12 @@
 
 .bg-shape {
   position: absolute;
-  border-radius: 50%;
-  opacity: 0.08;
-  background: #fff;
+  inset: 0;
+  opacity: 0.18;
+  background: linear-gradient(180deg, rgba(255,255,255,0.08), transparent);
 }
 
-.shape-1 { width: 600px; height: 600px; top: -200px; right: -100px; animation: float 20s ease-in-out infinite; }
-.shape-2 { width: 400px; height: 400px; bottom: -100px; left: -100px; animation: float 15s ease-in-out infinite reverse; }
-.shape-3 { width: 250px; height: 250px; top: 40%; left: 30%; animation: float 12s ease-in-out infinite; }
-
-@keyframes float {
-  0%, 100% { transform: translate(0, 0); }
-  50% { transform: translate(30px, -20px); }
+.shape-2,
+.shape-3 {
+  display: none;
 }

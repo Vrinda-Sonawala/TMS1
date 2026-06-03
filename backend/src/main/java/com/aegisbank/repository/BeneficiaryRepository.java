@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface BeneficiaryRepository extends JpaRepository<Beneficiary, Long> {
     List<Beneficiary> findByUserId(Long userId);
     Optional<Beneficiary> findByIdAndUserId(Long id, Long userId);
+    boolean existsByUserIdAndBeneficiaryAccountNumber(Long userId, String beneficiaryAccountNumber);
 }

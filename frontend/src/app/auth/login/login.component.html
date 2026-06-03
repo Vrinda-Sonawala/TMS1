@@ -39,11 +39,14 @@
           <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword" tabindex="-1">
             <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
           </button>
+          @if (form.get('password')?.hasError('required') && form.get('password')?.touched) {
+            <mat-error>Password is required</mat-error>
+          }
         </mat-form-field>
 
         <button mat-raised-button color="primary" class="submit-btn" [disabled]="loading || form.invalid">
           @if (loading) {
-            <span class="btn-loading">Signing in...</span>
+            <span class="button-spinner"><mat-spinner diameter="20"></mat-spinner></span>
           } @else {
             Sign In
           }

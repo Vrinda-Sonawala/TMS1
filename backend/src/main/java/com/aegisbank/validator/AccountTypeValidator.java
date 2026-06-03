@@ -27,8 +27,15 @@ public class AccountTypeValidator {
 
         if (isDebit) {
             switch (account.getAccountType()) {
-                case FIXED_DEPOSIT -> throw new InvalidTransactionException(
-                        "Fixed deposit accounts do not support normal withdrawals");
+                case FIXED_DEPOSIT -> {
+                    if (account.getMaturityDate() != null && LocalDate.now().isBefore(account.getMaturityDate())) {
+                        throw new InvalidTransactionException(
+                                "Fixed deposit account is locked until maturity: " + account.getMaturityDate());
+                    }
+                    if (account.getBalance().compareTo(amount) < 0) {
+                        throw new InsufficientBalanceException("Insufficient balance in fixed deposit account");
+                    }
+                }
                 case SAVINGS -> validateSavingsWithdrawal(account, amount);
                 case CURRENT -> validateCurrentWithdrawal(account, amount);
                 case BUSINESS -> validateBusinessTransaction(account, amount);

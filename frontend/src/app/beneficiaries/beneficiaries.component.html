@@ -12,26 +12,55 @@
       <mat-form-field appearance="outline">
         <mat-label>Nickname</mat-label>
         <input matInput formControlName="nickname" placeholder="e.g. John Savings">
+        @if (form.get('nickname')?.hasError('required') && form.get('nickname')?.touched) {
+          <mat-error>Nickname is required</mat-error>
+        }
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Account number</mat-label>
         <input matInput formControlName="beneficiaryAccountNumber">
+        @if (form.get('beneficiaryAccountNumber')?.hasError('required') && form.get('beneficiaryAccountNumber')?.touched) {
+          <mat-error>Account number is required</mat-error>
+        }
+        @if (form.get('beneficiaryAccountNumber')?.hasError('pattern')) {
+          <mat-error>Enter a valid account number</mat-error>
+        }
+        @if (form.get('beneficiaryAccountNumber')?.hasError('duplicate')) {
+          <mat-error>This beneficiary already exists</mat-error>
+        }
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Bank name</mat-label>
         <input matInput formControlName="bankName">
+        @if (form.get('bankName')?.hasError('required') && form.get('bankName')?.touched) {
+          <mat-error>Bank name is required</mat-error>
+        }
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>IFSC code</mat-label>
         <input matInput formControlName="ifscCode">
+        @if (form.get('ifscCode')?.hasError('required') && form.get('ifscCode')?.touched) {
+          <mat-error>IFSC code is required</mat-error>
+        }
+        @if (form.get('ifscCode')?.hasError('pattern')) {
+          <mat-error>Enter a valid IFSC code</mat-error>
+        }
       </mat-form-field>
-      <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Save Beneficiary</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="submitting || form.invalid">
+        @if (submitting) { <span class="button-spinner"><mat-spinner diameter="20"></mat-spinner></span> }
+        @else { Save Beneficiary }
+      </button>
     </form>
   </div>
 }
 
 <div class="beneficiaries-table">
-  @if (beneficiaries.length === 0) {
+  @if (loading) {
+    <div class="empty-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading beneficiaries...</p>
+    </div>
+  } @else if (beneficiaries.length === 0) {
     <div class="empty-state">
       <mat-icon>people_outline</mat-icon>
       <h3>No beneficiaries yet</h3>
@@ -41,6 +70,7 @@
       </button>
     </div>
   } @else {
+    <div class="responsive-table">
     <table mat-table [dataSource]="beneficiaries">
       <ng-container matColumnDef="nickname">
         <th mat-header-cell *matHeaderCellDef>Name</th>
@@ -74,5 +104,6 @@
       <tr mat-header-row *matHeaderRowDef="columns"></tr>
       <tr mat-row *matRowDef="let row; columns: columns;"></tr>
     </table>
+    </div>
   }
 </div>

@@ -70,7 +70,7 @@ export class AccountsComponent implements OnInit {
         this.creating = false;
       },
       error: (err) => {
-        this.snackBar.open(err.error?.message || 'Failed to create account', 'Close', { duration: 4000 });
+        this.snackBar.open(err.error?.message || 'Failed to create account', 'Close', { duration: 4000, panelClass: 'snack-error' });
         this.creating = false;
       }
     });

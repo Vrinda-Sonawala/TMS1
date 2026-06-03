@@ -13,6 +13,7 @@ import { AccountService } from '../../core/services/account.service';
 import { TransactionService } from '../../core/services/transaction.service';
 import { Account } from '../../core/models';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { getAccountMeta } from '../../shared/utils/account-type.util';
 
 @Component({
   selector: 'app-deposit',
@@ -30,6 +31,8 @@ export class DepositComponent implements OnInit {
   form: FormGroup;
   accounts: Account[] = [];
   loading = false;
+  selectedAccount: Account | null = null;
+  getAccountMeta = getAccountMeta;
 
   constructor(
     private fb: FormBuilder,
@@ -43,6 +46,9 @@ export class DepositComponent implements OnInit {
       amount: ['', [Validators.required, Validators.min(0.01)]],
       description: ['']
     });
+    this.form.get('accountNumber')?.valueChanges.subscribe(num => {
+      this.selectedAccount = this.accounts.find(a => a.accountNumber === num) || null;
+    });
   }
 
   ngOnInit(): void {
@@ -50,9 +56,22 @@ export class DepositComponent implements OnInit {
     if (user) {
       this.accountService.getUserAccounts(user.id).subscribe(a => {
         this.accounts = a;
-        if (a.length) this.form.patchValue({ accountNumber: a[0].accountNumber });
+        if (a.length) {
+          this.form.patchValue({ accountNumber: a[0].accountNumber });
+          this.selectedAccount = a[0];
+        }
       });
     }
+  }
+
+  private refreshAccounts(): void {
+    const user = this.auth.getCurrentUser();
+    if (!user) return;
+    const accountNumber = this.form.value.accountNumber;
+    this.accountService.getUserAccounts(user.id).subscribe(accounts => {
+      this.accounts = accounts;
+      this.selectedAccount = accounts.find(a => a.accountNumber === accountNumber) || null;
+    });
   }
 
   submit(): void {
@@ -61,8 +80,9 @@ export class DepositComponent implements OnInit {
     const { accountNumber, amount, description } = this.form.value;
     this.txnService.deposit(accountNumber, amount, description).subscribe({
       next: (t) => {
-        this.snackBar.open(`Deposit successful — Ref: ${t.referenceNumber}`, 'Close', { duration: 5000, panelClass: 'snack-success' });
+        this.snackBar.open(`Deposit successful - Ref: ${t.referenceNumber}`, 'Close', { duration: 5000, panelClass: 'snack-success' });
         this.form.patchValue({ amount: '', description: '' });
+        this.refreshAccounts();
         this.loading = false;
       },
       error: (err) => {

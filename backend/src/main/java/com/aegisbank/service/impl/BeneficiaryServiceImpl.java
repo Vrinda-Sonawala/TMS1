@@ -13,6 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.aegisbank.repository.AccountRepository;
+import com.aegisbank.exception.DuplicateResourceException;
+import com.aegisbank.exception.AccountNotFoundException;
+
 import java.util.List;
 
 @Service
@@ -21,6 +25,7 @@ public class BeneficiaryServiceImpl implements BeneficiaryService {
 
     private final BeneficiaryRepository beneficiaryRepository;
     private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
     private final EntityMapper entityMapper;
 
     @Override
@@ -28,6 +33,14 @@ public class BeneficiaryServiceImpl implements BeneficiaryService {
     public BeneficiaryResponse addBeneficiary(BeneficiaryRequest request, String userEmail) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (!accountRepository.existsByAccountNumber(request.getBeneficiaryAccountNumber())) {
+            throw new AccountNotFoundException("Beneficiary account number does not exist in the bank system");
+        }
+
+        if (beneficiaryRepository.existsByUserIdAndBeneficiaryAccountNumber(user.getId(), request.getBeneficiaryAccountNumber())) {
+            throw new DuplicateResourceException("This beneficiary account number is already registered");
+        }
 
         Beneficiary beneficiary = Beneficiary.builder()
                 .nickname(request.getNickname())

@@ -26,6 +26,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import com.aegisbank.enums.AccountType;
 import java.util.List;
 
 /**
@@ -111,8 +113,13 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         // Lock accounts in consistent order to prevent deadlocks
-        Account first = lockAccount(request.getSenderAccountNumber());
-        Account second = lockAccount(request.getReceiverAccountNumber());
+        String firstAcc = request.getSenderAccountNumber().compareTo(request.getReceiverAccountNumber()) < 0
+                ? request.getSenderAccountNumber() : request.getReceiverAccountNumber();
+        String secondAcc = firstAcc.equals(request.getSenderAccountNumber())
+                ? request.getReceiverAccountNumber() : request.getSenderAccountNumber();
+
+        Account first = lockAccount(firstAcc);
+        Account second = lockAccount(secondAcc);
 
         Account sender = first.getAccountNumber().equals(request.getSenderAccountNumber()) ? first : second;
         Account receiver = first.getAccountNumber().equals(request.getReceiverAccountNumber()) ? first : second;
@@ -137,6 +144,67 @@ public class TransactionServiceImpl implements TransactionService {
                 request.getDescription());
 
         log.info("Transfer successful: ref={} from={} to={} amount={}",
+                txn.getReferenceNumber(), sender.getAccountNumber(),
+                receiver.getAccountNumber(), request.getAmount());
+        return entityMapper.toTransactionResponse(txn);
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = Exception.class)
+    public TransactionResponse selfTransfer(TransferRequest request, String userEmail) {
+        validatePositiveAmount(request.getAmount());
+
+        if (request.getSenderAccountNumber().equals(request.getReceiverAccountNumber())) {
+            throw new InvalidTransactionException("Cannot transfer to the same account");
+        }
+
+        // Lock accounts in consistent order to prevent deadlocks
+        String firstAcc = request.getSenderAccountNumber().compareTo(request.getReceiverAccountNumber()) < 0
+                ? request.getSenderAccountNumber() : request.getReceiverAccountNumber();
+        String secondAcc = firstAcc.equals(request.getSenderAccountNumber())
+                ? request.getReceiverAccountNumber() : request.getSenderAccountNumber();
+
+        Account first = lockAccount(firstAcc);
+        Account second = lockAccount(secondAcc);
+
+        Account sender = first.getAccountNumber().equals(request.getSenderAccountNumber()) ? first : second;
+        Account receiver = first.getAccountNumber().equals(request.getReceiverAccountNumber()) ? first : second;
+
+        // Authorize access: both sender and receiver must belong to the logged-in user
+        authorizeAccountAccess(sender, userEmail);
+        authorizeAccountAccess(receiver, userEmail);
+
+        // Block fixed deposit self-transfers before maturity
+        if (sender.getAccountType() == AccountType.FIXED_DEPOSIT) {
+            if (sender.getMaturityDate() != null && LocalDate.now().isBefore(sender.getMaturityDate())) {
+                throw new InvalidTransactionException("Self-transfer from Fixed Deposit account is blocked before maturity: " + sender.getMaturityDate());
+            }
+        }
+        if (receiver.getAccountType() == AccountType.FIXED_DEPOSIT) {
+            if (receiver.getMaturityDate() != null && LocalDate.now().isBefore(receiver.getMaturityDate())) {
+                throw new InvalidTransactionException("Self-transfer to Fixed Deposit account is blocked before maturity: " + receiver.getMaturityDate());
+            }
+        }
+
+        accountTypeValidator.validateTransfer(sender, receiver);
+        accountTypeValidator.validateAccountForTransaction(sender, true, request.getAmount());
+
+        sender.setBalance(sender.getBalance().subtract(request.getAmount()));
+        receiver.setBalance(receiver.getBalance().add(request.getAmount()));
+        accountTypeValidator.updateDailyWithdrawalTracking(sender, request.getAmount());
+
+        accountRepository.save(sender);
+        accountRepository.save(receiver);
+
+        Transaction txn = persistTransaction(
+                sender.getAccountNumber(),
+                receiver.getAccountNumber(),
+                TransactionType.SELF_TRANSFER,
+                request.getAmount(),
+                TransactionStatus.SUCCESS,
+                request.getDescription());
+
+        log.info("Self-transfer successful: ref={} from={} to={} amount={}",
                 txn.getReferenceNumber(), sender.getAccountNumber(),
                 receiver.getAccountNumber(), request.getAmount());
         return entityMapper.toTransactionResponse(txn);

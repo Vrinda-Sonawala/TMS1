@@ -27,6 +27,12 @@ export class TransactionService {
     }).pipe(map(res => res.data));
   }
 
+  selfTransfer(senderAccountNumber: string, receiverAccountNumber: string, amount: number, description?: string): Observable<Transaction> {
+    return this.http.post<ApiResponse<Transaction>>(`${environment.apiUrl}/transactions/self-transfer`, {
+      senderAccountNumber, receiverAccountNumber, amount, description
+    }).pipe(map(res => res.data));
+  }
+
   getHistory(accountNumber: string): Observable<Transaction[]> {
     return this.http.get<ApiResponse<Transaction[]>>(`${environment.apiUrl}/transactions/history/${accountNumber}`)
       .pipe(map(res => res.data));

@@ -1,3 +1,5 @@
+
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
 @import 'bootstrap/scss/bootstrap';
 @import 'bootstrap-icons/font/bootstrap-icons.css';
 @import 'styles/variables';
@@ -24,7 +26,92 @@ html, body {
   --mdc-protected-button-container-color: #1a3a6b;
 }
 
-.mat-mdc-form-field { width: 100%; }
+.mat-mdc-form-field {
+  width: 100%;
+  display: block;
+}
+
+.mat-mdc-form-field .mat-mdc-text-field-wrapper {
+  min-height: 56px;
+  align-items: center;
+}
+
+.mat-mdc-form-field .mat-mdc-form-field-infix {
+  min-height: 56px;
+  padding-top: 16px;
+  padding-bottom: 8px;
+}
+
+.mat-mdc-form-field .mat-mdc-form-field-icon-prefix,
+.mat-mdc-form-field .mat-mdc-form-field-text-prefix,
+.mat-mdc-form-field .mat-mdc-form-field-icon-suffix {
+  align-self: center;
+}
+
+.mat-mdc-form-field mat-icon[matPrefix] {
+  margin-right: 8px;
+  color: #5a6578;
+}
+
+.mat-mdc-form-field-subscript-wrapper {
+  min-height: 20px;
+}
+
+.mat-mdc-select-panel mat-option .mdc-list-item__primary-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mat-mdc-table {
+  background: #ffffff;
+}
+
+.mat-mdc-header-row {
+  min-height: 52px;
+}
+
+.mat-mdc-row {
+  min-height: 58px;
+}
+
+.mat-mdc-cell,
+.mat-mdc-header-cell {
+  padding: 0 16px;
+  vertical-align: middle;
+}
+
+.responsive-table {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.responsive-table table {
+  min-width: 860px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem 1rem;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.button-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-spinner .mat-mdc-progress-spinner {
+  --mdc-circular-progress-active-indicator-color: currentColor;
+}
 
 .mat-mdc-snack-bar-container.snack-success .mdc-snackbar__surface { background: #0d9f6e !important; }
 .mat-mdc-snack-bar-container.snack-error .mdc-snackbar__surface { background: #dc3545 !important; }
@@ -34,3 +121,18 @@ html, body {
 ::-webkit-scrollbar-thumb { background: rgba(10, 22, 40, 0.2); border-radius: 3px; }
 
 .w-100 { width: 100%; }
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .form-actions .mat-mdc-button-base {
+    width: 100%;
+  }
+}

@@ -11,6 +11,8 @@ import { TransactionService } from '../core/services/transaction.service';
 import { Account, Transaction } from '../core/models';
 import { AccountCardComponent } from '../shared/components/account-card/account-card.component';
 import { getStatusClass, getTransactionIcon } from '../shared/utils/account-type.util';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard',
@@ -51,8 +53,18 @@ export class DashboardComponent implements OnInit {
         this.accounts = accounts;
         this.totalBalance = accounts.reduce((s, a) => s + Number(a.balance), 0);
         if (accounts.length > 0) {
-          this.transactionService.getHistory(accounts[0].accountNumber).subscribe({
-            next: (txns) => { this.recentTransactions = txns.slice(0, 8); this.loading = false; },
+          const historyRequests = accounts.map(account =>
+            this.transactionService.getHistory(account.accountNumber).pipe(catchError(() => of([] as Transaction[])))
+          );
+          forkJoin(historyRequests).subscribe({
+            next: histories => {
+              const byReference = new Map<string, Transaction>();
+              histories.flat().forEach(txn => byReference.set(txn.referenceNumber, txn));
+              this.recentTransactions = [...byReference.values()]
+                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                .slice(0, 8);
+              this.loading = false;
+            },
             error: () => { this.loading = false; }
           });
         } else {

@@ -40,7 +40,7 @@ export class HistoryComponent implements OnInit, AfterViewInit {
   loading = false;
   columns = ['icon', 'referenceNumber', 'transactionType', 'senderAccount', 'receiverAccount', 'amount', 'transactionStatus', 'createdAt'];
 
-  typeFilters = ['ALL', 'DEPOSIT', 'WITHDRAW', 'TRANSFER'];
+  typeFilters = ['ALL', 'DEPOSIT', 'WITHDRAW', 'TRANSFER', 'SELF_TRANSFER'];
   statusFilters = ['ALL', 'SUCCESS', 'FAILED', 'PENDING', 'REVERSED'];
 
   getStatusClass = getStatusClass;

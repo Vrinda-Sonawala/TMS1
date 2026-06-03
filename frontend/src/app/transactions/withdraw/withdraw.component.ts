@@ -13,6 +13,7 @@ import { AccountService } from '../../core/services/account.service';
 import { TransactionService } from '../../core/services/transaction.service';
 import { Account } from '../../core/models';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { getAccountMeta } from '../../shared/utils/account-type.util';
 
 @Component({
   selector: 'app-withdraw',
@@ -31,6 +32,7 @@ export class WithdrawComponent implements OnInit {
   accounts: Account[] = [];
   loading = false;
   selectedAccount: Account | null = null;
+  getAccountMeta = getAccountMeta;
 
   constructor(
     private fb: FormBuilder,
@@ -50,31 +52,62 @@ export class WithdrawComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const user = this.auth.getCurrentUser();
-    if (user) {
-      this.accountService.getUserAccounts(user.id).subscribe(a => {
-        this.accounts = a.filter(acc => acc.accountType !== 'FIXED_DEPOSIT');
-        if (this.accounts.length) {
-          this.form.patchValue({ accountNumber: this.accounts[0].accountNumber });
-          this.selectedAccount = this.accounts[0];
-        }
-      });
-    }
+    this.loadAccounts();
+  }
+
+  get selectedAvailable(): number {
+    if (!this.selectedAccount) return 0;
+    const overdraft = this.selectedAccount.accountType === 'CURRENT'
+      ? Number(this.selectedAccount.overdraftLimit || 0)
+      : 0;
+    return Number(this.selectedAccount.balance) + overdraft;
   }
 
   submit(): void {
-    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    if (!this.selectedAccount || !getAccountMeta(this.selectedAccount.accountType).canWithdraw) {
+      this.snackBar.open('This account type does not support withdrawals', 'Close', { duration: 4000, panelClass: 'snack-error' });
+      return;
+    }
+    if (this.selectedAccount.status !== 'ACTIVE') {
+      this.snackBar.open('Only active accounts can withdraw funds', 'Close', { duration: 4000, panelClass: 'snack-error' });
+      return;
+    }
+    if (Number(this.form.value.amount) > this.selectedAvailable) {
+      this.snackBar.open('Amount exceeds the available balance for this account', 'Close', { duration: 4000, panelClass: 'snack-error' });
+      return;
+    }
+
     this.loading = true;
     const { accountNumber, amount, description } = this.form.value;
     this.txnService.withdraw(accountNumber, amount, description).subscribe({
       next: (t) => {
-        this.snackBar.open(`Withdrawal successful — Ref: ${t.referenceNumber}`, 'Close', { duration: 5000, panelClass: 'snack-success' });
+        this.snackBar.open(`Withdrawal successful - Ref: ${t.referenceNumber}`, 'Close', { duration: 5000, panelClass: 'snack-success' });
         this.form.patchValue({ amount: '', description: '' });
+        this.loadAccounts(accountNumber);
         this.loading = false;
       },
       error: (err) => {
         this.snackBar.open(err.error?.message || 'Withdrawal failed', 'Close', { duration: 4000, panelClass: 'snack-error' });
         this.loading = false;
+      }
+    });
+  }
+
+  private loadAccounts(preferredAccount?: string): void {
+    const user = this.auth.getCurrentUser();
+    if (!user) return;
+    this.accountService.getUserAccounts(user.id).subscribe(accounts => {
+      this.accounts = accounts;
+      const selected = preferredAccount
+        ? accounts.find(a => a.accountNumber === preferredAccount)
+        : accounts.find(a => getAccountMeta(a.accountType).canWithdraw && a.status === 'ACTIVE') || accounts[0];
+      if (selected) {
+        this.form.patchValue({ accountNumber: selected.accountNumber });
+        this.selectedAccount = selected;
       }
     });
   }

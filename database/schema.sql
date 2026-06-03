@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     reference_number    VARCHAR(32) NOT NULL UNIQUE,
     sender_account      VARCHAR(20),
     receiver_account    VARCHAR(20),
-    transaction_type    ENUM('DEPOSIT', 'WITHDRAW', 'TRANSFER') NOT NULL,
+    transaction_type    ENUM('DEPOSIT', 'WITHDRAW', 'TRANSFER', 'SELF_TRANSFER') NOT NULL,
     amount              DECIMAL(19, 2) NOT NULL,
     transaction_status  ENUM('SUCCESS', 'FAILED', 'PENDING', 'REVERSED') NOT NULL,
     description         VARCHAR(500),

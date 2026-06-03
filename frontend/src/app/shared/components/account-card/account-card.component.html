@@ -13,8 +13,19 @@
     <div class="account-number">{{ account.accountNumber }}</div>
     <div class="balance">{{ account.balance | currency: account.currency:'symbol':'1.2-2' }}</div>
     @if (!compact) {
+      <div class="account-rules">
+        @for (rule of meta.rules; track rule) {
+          <span><mat-icon>check_circle</mat-icon>{{ rule }}</span>
+        }
+      </div>
       <div class="card-footer">
-        <span>{{ meta.description }}</span>
+        <span>
+          @if (account.accountType === 'FIXED_DEPOSIT' && account.maturityDate) {
+            Matures on {{ account.maturityDate }}
+          } @else {
+            {{ meta.description }}
+          }
+        </span>
       </div>
     }
   </div>

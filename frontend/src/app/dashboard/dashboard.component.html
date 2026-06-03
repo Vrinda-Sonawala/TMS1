@@ -80,6 +80,7 @@
         </div>
       } @else {
         <div class="table-card">
+          <div class="responsive-table">
           <table mat-table [dataSource]="recentTransactions">
             <ng-container matColumnDef="icon">
               <th mat-header-cell *matHeaderCellDef></th>
@@ -114,6 +115,7 @@
             <tr mat-header-row *matHeaderRowDef="txnColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: txnColumns;"></tr>
           </table>
+          </div>
         </div>
       }
     </section>

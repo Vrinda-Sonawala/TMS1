@@ -25,6 +25,7 @@ export const routes: Routes = [
       { path: 'transactions/deposit', loadComponent: () => import('./transactions/deposit/deposit.component').then(m => m.DepositComponent) },
       { path: 'transactions/withdraw', loadComponent: () => import('./transactions/withdraw/withdraw.component').then(m => m.WithdrawComponent) },
       { path: 'transactions/transfer', loadComponent: () => import('./transactions/transfer/transfer.component').then(m => m.TransferComponent) },
+      { path: 'transactions/self-transfer', loadComponent: () => import('./transactions/self-transfer/self-transfer.component').then(m => m.SelfTransferComponent) },
       { path: 'transactions/history', loadComponent: () => import('./transactions/history/history.component').then(m => m.HistoryComponent) },
       { path: 'beneficiaries', loadComponent: () => import('./beneficiaries/beneficiaries.component').then(m => m.BeneficiariesComponent) }
     ]

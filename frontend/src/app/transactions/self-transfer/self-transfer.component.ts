@@ -12,13 +12,13 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AuthService } from '../../core/services/auth.service';
 import { AccountService } from '../../core/services/account.service';
 import { TransactionService } from '../../core/services/transaction.service';
-import { Account, Beneficiary } from '../../core/models';
+import { Account } from '../../core/models';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 import { getAccountMeta } from '../../shared/utils/account-type.util';
 
 @Component({
-  selector: 'app-transfer',
+  selector: 'app-self-transfer',
   standalone: true,
   imports: [
     CommonModule, ReactiveFormsModule, CurrencyPipe,
@@ -26,16 +26,16 @@ import { getAccountMeta } from '../../shared/utils/account-type.util';
     MatButtonModule, MatIconModule, MatSnackBarModule,
     MatProgressSpinnerModule, MatDialogModule, PageHeaderComponent
   ],
-  templateUrl: './transfer.component.html',
+  templateUrl: './self-transfer.component.html',
   styleUrl: '../transaction-form.component.scss'
 })
-export class TransferComponent implements OnInit {
+export class SelfTransferComponent implements OnInit {
   form: FormGroup;
   accounts: Account[] = [];
-  beneficiaries: Beneficiary[] = [];
+  filteredReceiverAccounts: Account[] = [];
   loading = false;
   selectedSender: Account | null = null;
-  selectedBeneficiaryId: number | null = null;
+  selectedReceiver: Account | null = null;
   getAccountMeta = getAccountMeta;
 
   constructor(
@@ -48,18 +48,25 @@ export class TransferComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       senderAccountNumber: ['', Validators.required],
-      receiverAccountNumber: ['', [Validators.required, Validators.pattern(/^[0-9A-Za-z-]{6,30}$/)]],
+      receiverAccountNumber: ['', Validators.required],
       amount: ['', [Validators.required, Validators.min(0.01)]],
       description: ['']
     });
+
+    // Listen to sender changes to filter destination accounts
     this.form.get('senderAccountNumber')?.valueChanges.subscribe(num => {
       this.selectedSender = this.accounts.find(a => a.accountNumber === num) || null;
+      this.updateReceiverOptions();
+    });
+
+    // Listen to receiver changes to display details
+    this.form.get('receiverAccountNumber')?.valueChanges.subscribe(num => {
+      this.selectedReceiver = this.accounts.find(a => a.accountNumber === num) || null;
     });
   }
 
   ngOnInit(): void {
     this.loadAccounts();
-    this.loadBeneficiaries();
   }
 
   get senderAvailable(): number {
@@ -70,11 +77,24 @@ export class TransferComponent implements OnInit {
     return Number(this.selectedSender.balance) + overdraft;
   }
 
-  selectBeneficiary(id: number | null): void {
-    this.selectedBeneficiaryId = id;
-    const beneficiary = this.beneficiaries.find(b => b.id === id);
-    if (beneficiary) {
-      this.form.patchValue({ receiverAccountNumber: beneficiary.beneficiaryAccountNumber });
+  isFDLocked(account: Account): boolean {
+    if (account.accountType !== 'FIXED_DEPOSIT') return false;
+    if (!account.maturityDate) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const maturity = new Date(account.maturityDate);
+    maturity.setHours(0, 0, 0, 0);
+    return today.getTime() < maturity.getTime();
+  }
+
+  private updateReceiverOptions(): void {
+    const senderNum = this.form.value.senderAccountNumber;
+    this.filteredReceiverAccounts = this.accounts.filter(a => a.accountNumber !== senderNum);
+
+    const receiverNum = this.form.value.receiverAccountNumber;
+    if (receiverNum === senderNum) {
+      this.form.patchValue({ receiverAccountNumber: '' });
+      this.selectedReceiver = null;
     }
   }
 
@@ -86,18 +106,32 @@ export class TransferComponent implements OnInit {
 
     const v = this.form.value;
     if (!this.selectedSender || !getAccountMeta(this.selectedSender.accountType).canTransfer) {
-      this.snackBar.open('This account type does not support transfers', 'Close', { duration: 4000, panelClass: 'snack-error' });
+      this.snackBar.open('Source account type does not support transfers', 'Close', { duration: 4000, panelClass: 'snack-error' });
       return;
     }
     if (this.selectedSender.status !== 'ACTIVE') {
       this.snackBar.open('Only active accounts can send transfers', 'Close', { duration: 4000, panelClass: 'snack-error' });
       return;
     }
+    if (this.selectedReceiver && this.selectedReceiver.status !== 'ACTIVE') {
+      this.snackBar.open('Receiver account must be active', 'Close', { duration: 4000, panelClass: 'snack-error' });
+      return;
+    }
     if (v.senderAccountNumber === v.receiverAccountNumber) {
-      this.form.get('receiverAccountNumber')?.setErrors({ sameAccount: true });
       this.snackBar.open('Cannot transfer to the same account', 'Close', { duration: 4000, panelClass: 'snack-error' });
       return;
     }
+
+    // Fixed deposit lock checks
+    if (this.selectedSender && this.isFDLocked(this.selectedSender)) {
+      this.snackBar.open(`Self-transfer blocked: Source account is a Fixed Deposit locked until maturity (${this.selectedSender.maturityDate})`, 'Close', { duration: 5000, panelClass: 'snack-error' });
+      return;
+    }
+    if (this.selectedReceiver && this.isFDLocked(this.selectedReceiver)) {
+      this.snackBar.open(`Self-transfer blocked: Target account is a Fixed Deposit locked until maturity (${this.selectedReceiver.maturityDate})`, 'Close', { duration: 5000, panelClass: 'snack-error' });
+      return;
+    }
+
     if (Number(v.amount) > this.senderAvailable) {
       this.snackBar.open('Transfer amount exceeds available balance', 'Close', { duration: 4000, panelClass: 'snack-error' });
       return;
@@ -106,14 +140,14 @@ export class TransferComponent implements OnInit {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '420px',
       data: {
-        title: 'Confirm Transfer',
-        message: 'Please review your transfer details before confirming.',
+        title: 'Confirm Self-Transfer',
+        message: 'Please review your self-transfer details before confirming.',
         amount: v.amount,
         currency: this.selectedSender.currency || 'USD',
         confirmText: 'Transfer Now',
         details: [
-          { label: 'From', value: v.senderAccountNumber },
-          { label: 'To', value: v.receiverAccountNumber },
+          { label: 'From Account', value: `${v.senderAccountNumber} (${getAccountMeta(this.selectedSender.accountType).label})` },
+          { label: 'To Account', value: `${v.receiverAccountNumber} (${getAccountMeta(this.selectedReceiver!.accountType).label})` },
           ...(v.description ? [{ label: 'Note', value: v.description }] : [])
         ]
       }
@@ -126,16 +160,16 @@ export class TransferComponent implements OnInit {
 
   private executeTransfer(v: { senderAccountNumber: string; receiverAccountNumber: string; amount: number; description: string }): void {
     this.loading = true;
-    this.txnService.transfer(v.senderAccountNumber, v.receiverAccountNumber, v.amount, v.description).subscribe({
+    this.txnService.selfTransfer(v.senderAccountNumber, v.receiverAccountNumber, v.amount, v.description).subscribe({
       next: (t) => {
-        this.snackBar.open(`Transfer successful - Ref: ${t.referenceNumber}`, 'Close', { duration: 5000, panelClass: 'snack-success' });
+        this.snackBar.open(`Self-transfer successful - Ref: ${t.referenceNumber}`, 'Close', { duration: 5000, panelClass: 'snack-success' });
         this.form.patchValue({ amount: '', description: '', receiverAccountNumber: '' });
-        this.selectedBeneficiaryId = null;
+        this.selectedReceiver = null;
         this.loadAccounts(v.senderAccountNumber);
         this.loading = false;
       },
       error: (err) => {
-        this.snackBar.open(err.error?.message || 'Transfer failed', 'Close', { duration: 4000, panelClass: 'snack-error' });
+        this.snackBar.open(err.error?.message || 'Self-transfer failed', 'Close', { duration: 4000, panelClass: 'snack-error' });
         this.loading = false;
       }
     });
@@ -153,10 +187,7 @@ export class TransferComponent implements OnInit {
         this.form.patchValue({ senderAccountNumber: selected.accountNumber });
         this.selectedSender = selected;
       }
+      this.updateReceiverOptions();
     });
-  }
-
-  private loadBeneficiaries(): void {
-    this.txnService.getBeneficiaries().subscribe(b => (this.beneficiaries = b));
   }
 }

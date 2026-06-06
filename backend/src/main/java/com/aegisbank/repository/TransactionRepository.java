@@ -22,6 +22,13 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             """)
     List<Transaction> findByAccountNumber(@Param("accountNumber") String accountNumber);
 
+    @Query("""
+            SELECT COUNT(t) > 0 FROM Transaction t
+            WHERE (t.senderAccount = :accountNumber OR t.receiverAccount = :accountNumber)
+            AND t.transactionStatus = com.aegisbank.enums.TransactionStatus.PENDING
+            """)
+    boolean hasPendingTransactions(@Param("accountNumber") String accountNumber);
+
     Page<Transaction> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
     List<Transaction> findByTransactionStatus(TransactionStatus status);

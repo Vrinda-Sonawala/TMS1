@@ -1,0 +1,132 @@
+<app-page-header title="User Profile" subtitle="Manage your account profile and security settings" icon="person"></app-page-header>
+
+<div class="profile-layout" *ngIf="!loading; else spinner">
+  <div class="profile-grid">
+    <!-- Left Column: Details & Edit Profile -->
+    <div class="profile-card info-panel-card">
+      <div class="card-header">
+        <mat-icon class="header-icon">account_circle</mat-icon>
+        <div class="header-text">
+          <h3>Personal Profile</h3>
+          <p>Your personal records and account stats</p>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span class="stat-label">Total Accounts</span>
+          <span class="stat-val">{{ profile?.totalAccounts }}</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Combined Balance</span>
+          <span class="stat-val balance-gold">{{ profile?.totalBalance | currency:'INR':'symbol':'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <form [formGroup]="profileForm" (ngSubmit)="updateProfile()" class="profile-form">
+        <mat-form-field appearance="outline" class="w-100 read-only-field">
+          <mat-label>Email Address</mat-label>
+          <input matInput [value]="profile?.email" readonly>
+          <mat-icon matPrefix>email</mat-icon>
+          <mat-hint>Email address cannot be changed</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100 read-only-field">
+          <mat-label>User Account Role</mat-label>
+          <input matInput [value]="profile?.role" readonly>
+          <mat-icon matPrefix>shield</mat-icon>
+          <mat-hint>Assigned system security level</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100 read-only-field">
+          <mat-label>Member Since</mat-label>
+          <input matInput [value]="profile?.createdAt | date:'longDate'" readonly>
+          <mat-icon matPrefix>today</mat-icon>
+        </mat-form-field>
+
+        <div class="divider"></div>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Full Name</mat-label>
+          <input matInput formControlName="fullName" placeholder="Your full name">
+          <mat-icon matPrefix>badge</mat-icon>
+          <mat-error *ngIf="profileForm.get('fullName')?.hasError('required')">Full Name is required</mat-error>
+          <mat-error *ngIf="profileForm.get('fullName')?.hasError('minlength')">Name must be at least 3 characters long</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Phone Number</mat-label>
+          <input matInput formControlName="phoneNumber" placeholder="10-digit mobile number">
+          <mat-icon matPrefix>phone</mat-icon>
+          <mat-error *ngIf="profileForm.get('phoneNumber')?.hasError('required')">Phone Number is required</mat-error>
+          <mat-error *ngIf="profileForm.get('phoneNumber')?.hasError('pattern')">Please enter a valid 10-digit mobile number</mat-error>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" class="w-100 submit-btn" [disabled]="savingProfile || profileForm.invalid">
+          <span class="button-spinner" *ngIf="savingProfile"><mat-spinner diameter="20"></mat-spinner></span>
+          <span *ngIf="!savingProfile">Save Profile Changes</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Right Column: Change Password -->
+    <div class="profile-card security-panel-card">
+      <div class="card-header">
+        <mat-icon class="header-icon cyan-icon">lock</mat-icon>
+        <div class="header-text">
+          <h3>Security & Password</h3>
+          <p>Update your authentication password credentials</p>
+        </div>
+      </div>
+
+      <div class="security-info">
+        <h5><mat-icon>info</mat-icon> Password Strength Rules:</h5>
+        <ul>
+          <li>Minimum 8 characters in length</li>
+          <li>At least one uppercase letter (A-Z)</li>
+          <li>At least one lowercase letter (a-z)</li>
+          <li>At least one numeric digit (0-9)</li>
+          <li>At least one special character (e.g. &#64;, $, !, %, *, ?, &)</li>
+        </ul>
+      </div>
+
+      <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="password-form">
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Current Password</mat-label>
+          <input matInput type="password" formControlName="currentPassword" placeholder="Enter current password">
+          <mat-icon matPrefix>vpn_key</mat-icon>
+          <mat-error *ngIf="passwordForm.get('currentPassword')?.hasError('required')">Current Password is required</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>New Password</mat-label>
+          <input matInput type="password" formControlName="newPassword" placeholder="Enter new strong password">
+          <mat-icon matPrefix>lock_open</mat-icon>
+          <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('required')">New Password is required</mat-error>
+          <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('minlength')">Password must be at least 8 characters long</mat-error>
+          <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('pattern')">Password does not meet complexity requirements</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Confirm New Password</mat-label>
+          <input matInput type="password" formControlName="confirmPassword" placeholder="Verify new password">
+          <mat-icon matPrefix>lock</mat-icon>
+          <mat-error *ngIf="passwordForm.get('confirmPassword')?.hasError('required')">Confirm password is required</mat-error>
+          <mat-error *ngIf="passwordForm.hasError('mismatch') && passwordForm.get('confirmPassword')?.touched">Passwords do not match</mat-error>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" class="w-100 submit-btn" [disabled]="savingPassword || passwordForm.invalid">
+          <span class="button-spinner" *ngIf="savingPassword"><mat-spinner diameter="20"></mat-spinner></span>
+          <span *ngIf="!savingPassword">Change Password</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<ng-template #spinner>
+  <div class="loading-state">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Retrieving secure profile configuration...</p>
+  </div>
+</ng-template>

@@ -14,6 +14,8 @@ import com.aegisbank.exception.UnauthorizedAccessException;
 import com.aegisbank.mapper.EntityMapper;
 import com.aegisbank.repository.AccountRepository;
 import com.aegisbank.repository.UserRepository;
+import com.aegisbank.repository.TransactionRepository;
+import com.aegisbank.exception.InvalidTransactionException;
 import com.aegisbank.service.AccountService;
 import com.aegisbank.util.ReferenceGenerator;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,7 @@ public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
+    private final TransactionRepository transactionRepository;
     private final EntityMapper entityMapper;
     private final BankingProperties bankingProperties;
 
@@ -74,7 +77,10 @@ public class AccountServiceImpl implements AccountService {
         if (!requester.getId().equals(userId) && requester.getRole() != UserRole.ADMIN) {
             throw new UnauthorizedAccessException("Not authorized to view these accounts");
         }
-        return entityMapper.toAccountResponseList(accountRepository.findByUserId(userId));
+        List<Account> accounts = accountRepository.findByUserId(userId).stream()
+                .filter(a -> a.getStatus() != AccountStatus.CLOSED)
+                .toList();
+        return entityMapper.toAccountResponseList(accounts);
     }
 
     private Account buildAccount(AccountType type, User user) {
@@ -116,6 +122,27 @@ public class AccountServiceImpl implements AccountService {
     private User findUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new AccountNotFoundException("User not found"));
+    }
+
+    @Override
+    @Transactional
+    public void deleteAccount(Long id, String userEmail) {
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found with id: " + id));
+
+        authorizeAccountAccess(account, userEmail);
+
+        if (account.getBalance().compareTo(BigDecimal.ZERO) > 0) {
+            throw new InvalidTransactionException("Account with remaining balance cannot be deleted.");
+        }
+
+        if (transactionRepository.hasPendingTransactions(account.getAccountNumber())) {
+            throw new InvalidTransactionException("Account with pending transactions cannot be closed.");
+        }
+
+        account.setStatus(AccountStatus.CLOSED);
+        accountRepository.save(account);
+        log.info("Account soft-deleted/closed: {} by user={}", account.getAccountNumber(), userEmail);
     }
 
     private void authorizeAccountAccess(Account account, String userEmail) {

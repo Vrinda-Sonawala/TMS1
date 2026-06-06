@@ -48,7 +48,8 @@ export class MainLayoutComponent implements OnInit, OnDestroy {
     { label: 'Transfer', icon: 'swap_horiz', route: '/transactions/transfer' },
     { label: 'Self Transfer', icon: 'sync_alt', route: '/transactions/self-transfer' },
     { label: 'Beneficiaries', icon: 'people_outline', route: '/beneficiaries' },
-    { label: 'Transactions', icon: 'receipt_long', route: '/transactions/history' }
+    { label: 'Transactions', icon: 'receipt_long', route: '/transactions/history' },
+    { label: 'Profile', icon: 'person_outline', route: '/profile' }
   ];
 
   constructor(

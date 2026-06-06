@@ -9,7 +9,7 @@
         <mat-select formControlName="accountNumber">
           @for (a of accounts; track a.id) {
             <mat-option [value]="a.accountNumber" [disabled]="!getAccountMeta(a.accountType).canWithdraw || a.status !== 'ACTIVE'">
-              {{ a.accountNumber }} - {{ getAccountMeta(a.accountType).label }} ({{ a.balance | currency:a.currency }})
+              {{ a.accountNumber }} - {{ getAccountMeta(a.accountType).label }} ({{ a.balance | currency:'INR' }})
             </mat-option>
           }
         </mat-select>
@@ -21,14 +21,14 @@
       @if (selectedAccount) {
         <div class="balance-info">
           {{ getAccountMeta(selectedAccount.accountType).balanceLabel }}:
-          <strong>{{ selectedAvailable | currency:selectedAccount.currency }}</strong>
+          <strong>{{ selectedAvailable | currency:'INR' }}</strong>
         </div>
       }
 
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Amount</mat-label>
         <input matInput type="number" formControlName="amount" min="0.01" step="0.01">
-        <span matTextPrefix>$&nbsp;</span>
+        <span matTextPrefix>₹&nbsp;</span>
         @if (form.get('amount')?.hasError('required') && form.get('amount')?.touched) {
           <mat-error>Amount is required</mat-error>
         }

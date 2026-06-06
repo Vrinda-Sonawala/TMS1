@@ -63,4 +63,13 @@ public class AccountController {
         return ResponseEntity.ok(ApiResponse.success(
                 accountService.getAccountsByUserId(userId, userDetails.getUsername())));
     }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Close/Delete a bank account")
+    public ResponseEntity<ApiResponse<Void>> deleteAccount(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        accountService.deleteAccount(id, userDetails.getUsername());
+        return ResponseEntity.ok(ApiResponse.success("Account closed successfully", null));
+    }
 }

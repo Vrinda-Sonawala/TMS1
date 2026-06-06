@@ -21,6 +21,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       { path: 'dashboard', loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent) },
+      { path: 'profile', loadComponent: () => import('./profile/profile.component').then(m => m.ProfileComponent) },
       { path: 'accounts', loadComponent: () => import('./accounts/accounts.component').then(m => m.AccountsComponent) },
       { path: 'transactions/deposit', loadComponent: () => import('./transactions/deposit/deposit.component').then(m => m.DepositComponent) },
       { path: 'transactions/withdraw', loadComponent: () => import('./transactions/withdraw/withdraw.component').then(m => m.WithdrawComponent) },

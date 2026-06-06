@@ -10,7 +10,7 @@
         <mat-select formControlName="senderAccountNumber">
           @for (a of accounts; track a.id) {
             <mat-option [value]="a.accountNumber" [disabled]="!getAccountMeta(a.accountType).canTransfer || a.status !== 'ACTIVE' || isFDLocked(a)">
-              {{ a.accountNumber }} - {{ getAccountMeta(a.accountType).label }} ({{ a.balance | currency:a.currency }})
+              {{ a.accountNumber }} - {{ getAccountMeta(a.accountType).label }} ({{ a.balance | currency:'INR' }})
               @if (isFDLocked(a)) { [Locked FD before maturity] }
             </mat-option>
           }
@@ -23,7 +23,7 @@
       @if (selectedSender) {
         <div class="balance-info">
           {{ getAccountMeta(selectedSender.accountType).balanceLabel }}:
-          <strong>{{ senderAvailable | currency:selectedSender.currency }}</strong>
+          <strong>{{ senderAvailable | currency:'INR' }}</strong>
           @if (isFDLocked(selectedSender)) {
             <div style="color: #dc3545; margin-top: 4px; font-weight: 500;">
               Locked until maturity: {{ selectedSender.maturityDate }}
@@ -37,7 +37,7 @@
         <mat-select formControlName="receiverAccountNumber">
           @for (a of filteredReceiverAccounts; track a.id) {
             <mat-option [value]="a.accountNumber" [disabled]="a.status !== 'ACTIVE' || isFDLocked(a)">
-              {{ a.accountNumber }} - {{ getAccountMeta(a.accountType).label }} ({{ a.balance | currency:a.currency }})
+              {{ a.accountNumber }} - {{ getAccountMeta(a.accountType).label }} ({{ a.balance | currency:'INR' }})
               @if (isFDLocked(a)) { [Locked FD before maturity] }
             </mat-option>
           }
@@ -50,7 +50,7 @@
       @if (selectedReceiver) {
         <div class="balance-info">
           Current Balance:
-          <strong>{{ selectedReceiver.balance | currency:selectedReceiver.currency }}</strong>
+          <strong>{{ selectedReceiver.balance | currency:'INR' }}</strong>
           @if (isFDLocked(selectedReceiver)) {
             <div style="color: #dc3545; margin-top: 4px; font-weight: 500;">
               Locked until maturity: {{ selectedReceiver.maturityDate }}
@@ -62,7 +62,7 @@
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Amount to Transfer</mat-label>
         <input matInput type="number" formControlName="amount" min="0.01" step="0.01">
-        <span matTextPrefix>$&nbsp;</span>
+        <span matTextPrefix>₹&nbsp;</span>
         @if (form.get('amount')?.hasError('required') && form.get('amount')?.touched) {
           <mat-error>Amount is required</mat-error>
         }

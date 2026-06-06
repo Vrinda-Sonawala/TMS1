@@ -5,13 +5,20 @@
       <div class="type-icon">
         <mat-icon>{{ meta.icon }}</mat-icon>
       </div>
-      <span class="status-badge" [class]="'status-' + account.status.toLowerCase()">
-        {{ account.status }}
-      </span>
+      <div class="card-actions-wrapper">
+        <span class="status-badge" [class]="'status-' + account.status.toLowerCase()">
+          {{ account.status }}
+        </span>
+        @if (!compact && account.status !== 'CLOSED') {
+          <button type="button" class="delete-btn" (click)="onDelete($event)" title="Close Account">
+            <mat-icon>delete_outline</mat-icon>
+          </button>
+        }
+      </div>
     </div>
     <div class="type-label">{{ meta.label }} Account</div>
     <div class="account-number">{{ account.accountNumber }}</div>
-    <div class="balance">{{ account.balance | currency: account.currency:'symbol':'1.2-2' }}</div>
+    <div class="balance">{{ account.balance | currency: 'INR':'symbol':'1.2-2' }}</div>
     @if (!compact) {
       <div class="account-rules">
         @for (rule of meta.rules; track rule) {

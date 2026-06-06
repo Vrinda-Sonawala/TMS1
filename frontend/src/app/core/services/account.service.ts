@@ -28,4 +28,8 @@ export class AccountService {
     return this.http.get<ApiResponse<Account[]>>(`${environment.apiUrl}/accounts/user/${userId}`)
       .pipe(map(res => res.data));
   }
+
+  deleteAccount(id: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`${environment.apiUrl}/accounts/${id}`);
+  }
 }

@@ -63,3 +63,14 @@ export interface BalanceResponse {
   currency: string;
   asOf: string;
 }
+
+export interface UserProfileResponse {
+  id: number;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  role: 'CUSTOMER' | 'ADMIN';
+  createdAt: string;
+  totalAccounts: number;
+  totalBalance: number;
+}

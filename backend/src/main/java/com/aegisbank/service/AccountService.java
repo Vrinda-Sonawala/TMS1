@@ -11,4 +11,5 @@ public interface AccountService {
     AccountResponse getAccount(String accountNumber, String userEmail);
     BalanceResponse getBalance(String accountNumber, String userEmail);
     List<AccountResponse> getAccountsByUserId(Long userId, String userEmail);
+    void deleteAccount(Long id, String userEmail);
 }

@@ -44,7 +44,7 @@ aegis:
     expiration-ms: 86400000
 
   banking:
-    default-currency: USD
+    default-currency: INR
 
     savings:
       minimum-balance: 500.00
